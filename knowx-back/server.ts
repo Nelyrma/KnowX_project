@@ -1,9 +1,9 @@
-import express from 'express';
-const app = express();
+const express = require('express');
+const authRoutes = require('./routes/auth');
 
-app.get('/', (req: express.Request, res: express.Response) => {  // <-- Add types here
-  res.send('API KnowX Ready!');
-});
+const app = express();
+app.use(express.json());
+app.use('/auth', authRoutes);
 
 app.listen(3001, () => {
   console.log('Server running on http://localhost:3001');
