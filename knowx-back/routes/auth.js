@@ -43,24 +43,41 @@ router.post('/signup', async (req, res) => {
 });
 
 // POST /auth/login
+// -----------------
 router.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
-    // find the user
-    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (user.rows.length === 0) {
-        return res.status(401).send('Incorrect email or password');
-    }
+    try {
+        // find the user
+        const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        if (user.rows.length === 0) {
+            return res.status(401).json({ error: 'Incorect email or password' });
+        }
 
-    // compare passwords
-    const validPassword = await bcrypt.compare(password, user.rows[0].password);
-    if (!validPassword) {
-        return res.status(401).send('Incorrect email or password')
-    }
+        // compare the passwords
+        const validPassword = await bcrypt.compare(password, user.rows[0].password);
+        if (!validPassword) {
+            return res.status(401).json({ error: 'Incorrect email or password' });
+        }
 
-    // generate a JWT
-    const token = jwt.sign({ userId: user.rows[0].id }, 'YOUR_SECRET', { expiresIn: '1h' });
-    res.send({ token });
+        // generate a JWT
+        const token = jwt.sign({ userId: user.rows[0].id },
+            'YOUR_SECRET', { expiresIn: '1h' });
+        
+        // return the token
+        res.json({
+            token,
+            user: {
+                id: user.rows[0].id,
+                first_name: user.rows[0].first_name,
+                last_name: user.rows[0].last_name,
+                email: user.rows[0].email
+            }
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
 });
 
 module.exports = router;
