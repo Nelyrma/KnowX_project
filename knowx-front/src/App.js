@@ -1,11 +1,15 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Login from './Login';
+import Profile from './Profile';
 
 function App() {
     return (
-        <div>
-            <h1>KnowX</h1>
-            <Login />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Login />} />
+                <Route path="/profile" element={<Profile />} />
+            </Routes>
+        </Router>
     );
 }
 
