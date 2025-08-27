@@ -80,4 +80,16 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// GET /profile
+//--------------
+router.get('/profile', authenticateToken, async (req, res) => {
+    try {
+        const user = await pool.query(`SELECT first_name, last_name, email,
+            skills_offered, skills_wanted FROM users WHERE id = $1`, [req.userId]);
+        res.json(user.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 module.exports = router;
