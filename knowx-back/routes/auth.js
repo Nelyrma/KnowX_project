@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
         // find the user
         const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (user.rows.length === 0) {
-            return res.status(401).json({ error: 'Incorect email or password' });
+            return res.status(401).json({ error: 'Incorrect email or password' });
         }
 
         // compare the passwords
