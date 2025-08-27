@@ -3,6 +3,7 @@ const router = express.Router();
 const { Pool } = require('pg');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const authenticateToken = require('../middleware/auth');
 const { error } = require('console');
 
 const pool = new Pool({
