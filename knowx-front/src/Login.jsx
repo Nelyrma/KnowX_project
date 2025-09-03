@@ -12,7 +12,7 @@ const Login = () => {
             const res = await axios.post('http://localhost:3001/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);  // stock the token
             alert('Connected !');
-            navigate('/profile'); // Redirect to the profile page
+            navigate('/home'); // Redirect to the home page
         } catch (err) {
             alert('Connection error : ' + (err.response?.data?.error ||
                 err.message));
