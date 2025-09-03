@@ -12,4 +12,21 @@ router.get('/', async (req, res) => {
     }
 });
 
+router.post('/', async (req, res) => {
+    const { title, skills_offered, description } = req.body;
+    const userId = req.userId; // retrieved from authentication middleware
+
+    try {
+        const result = await pool.query(
+            `INSERT INTO offers (user_id, title, skills_offered, description)
+            VALUES ($1, $2, $3, $4) RETURNING *`,
+            [userId, title, skills_offered, description]
+        );
+        res.status(201).json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' })
+    }
+});
+
 module.exports = router;
