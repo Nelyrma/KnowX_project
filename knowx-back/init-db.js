@@ -22,7 +22,19 @@ const pool = new Pool({
                 created_at TIMESTAMP DEFAULT NOW()
             );
         `);
-        console.log('✅ Table "users" created !');
+        // create offers table
+        await pool.query(`
+            CREATE TABLE offers (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER REFERENCES users(id),
+                title VARCHAR(255) NOT NULL,
+                skills_offered TEXT[],
+                description TEXT,
+                created_at TIMESTAMP DEFAULT NOW()
+            );
+        `);
+
+        console.log('✅ Tables "users" and "offers" created !');
     } catch (err) {
         console.error('❌ Error :', err);
     } finally {
