@@ -38,7 +38,7 @@ function SignupForm() {
             const data = await res.json();
             if (res.ok) {
                 setMessage("✅ Account created successfully!");
-                setTimeout(() => navigate("/login"), 2000); // redirection after 2sec
+                setTimeout(() => navigate("/home"), 1000); // redirection after 2sec
           
             } else {
             setMessage(data.error || "❌ Something went wrong");

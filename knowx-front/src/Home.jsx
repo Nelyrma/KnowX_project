@@ -2,10 +2,23 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-
 const Home = () => {
     const [offers, setOffers] = useState([]);
     const navigate = useNavigate();
+
+    // Vérification du token et déconnexion
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            navigate("/login");
+            return;
+        }
+    }, [navigate]);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token");
+        navigate("/login");
+    };
 
     useEffect(() => {
         const fetchOffers = async () => {
@@ -14,20 +27,40 @@ const Home = () => {
                 setOffers(res.data);
             } catch (err) {
                 console.error('Error loading offers:', err);
+                if (err.response?.status === 401) {
+                    navigate("/login");
+                }
             }
         };
         fetchOffers();
-    }, []);
+    }, [navigate]);
 
     return (
         <div>
-            <h1>Available Offers</h1>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <h1>Available Offers</h1>
+                <button 
+                    onClick={handleLogout}
+                    style={{ 
+                        padding: "8px 16px", 
+                        backgroundColor: "#ff4444", 
+                        color: "white", 
+                        border: "none", 
+                        borderRadius: "4px",
+                        cursor: "pointer"
+                    }}
+                >
+                    Logout
+                </button>
+            </div>
+
             <button
                 onClick={() => navigate('/create-offer')}
                 style={{ marginBottom: '20px', padding: '10px' }}
             >
                 ➕ Create an offer
             </button>
+            
             {offers.length === 0 ? (
                 <p>No offers available at this time.</p>
             ) : (
