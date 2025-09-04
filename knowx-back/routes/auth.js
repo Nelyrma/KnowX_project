@@ -96,4 +96,24 @@ router.get('/profile', authenticateToken, async (req, res) => {
     }
 });
 
+// PATCH /profile
+//---------------
+router.patch('/profile', authenticateToken, async (req, res) => {
+    const { skills_offered, skills_wanted } = req.body;
+
+    try {
+        const result = await pool.query(
+            `UPDATE users
+            SET skills_offered = $1, skills_wanted = $2
+            WHERE id = $3
+            RETURNING first_name, last_name, skills_offered, skills_wanted`,
+            [skills_offered, skills_wanted, req.userId]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 module.exports = router;
