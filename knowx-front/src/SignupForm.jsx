@@ -91,14 +91,20 @@ function SignupForm() {
                     required
                     style={styles.input}
                 />
-                <button type="submit" style={styles.button}>Sign up</button>
+                <button
+                    type="submit"
+                    disabled={loading}
+                    style={styles.button}
+                >
+                    Sign up
+                </button>
             </form>
             {message && <p>{message}</p>}
             <p>- or -</p>
             <p>
                 Have an account?
                 <span onClick={() => navigate('/login')} style={{ color: 'blue', cursor: 'pointer' }}>
-                     Sign in
+                    Sign in
                 </span>
             </p>
         </div>

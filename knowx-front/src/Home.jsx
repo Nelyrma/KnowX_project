@@ -6,7 +6,7 @@ const Home = () => {
     const [offers, setOffers] = useState([]);
     const navigate = useNavigate();
 
-    // Vérification du token et déconnexion
+    // Vérification du token et de déconnexion
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
@@ -39,19 +39,38 @@ const Home = () => {
         <div>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <h1>Available Offers</h1>
-                <button 
-                    onClick={handleLogout}
-                    style={{ 
-                        padding: "8px 16px", 
-                        backgroundColor: "#ff4444", 
-                        color: "white", 
-                        border: "none", 
-                        borderRadius: "4px",
-                        cursor: "pointer"
-                    }}
-                >
-                    Logout
-                </button>
+                <div>
+                    {/* Profile button */}
+                    <button 
+                        onClick={() => navigate('/profile')}
+                        style={{ 
+                            padding: "8px 16px", 
+                            backgroundColor: "#4CAF50", 
+                            color: "white", 
+                            border: "none", 
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            marginRight: "10px"
+                        }}
+                    >
+                        👤 Profile
+                    </button>
+                    
+                    {/* Logout button */}
+                    <button 
+                        onClick={handleLogout}
+                        style={{ 
+                            padding: "8px 16px", 
+                            backgroundColor: "#ff4444", 
+                            color: "white", 
+                            border: "none", 
+                            borderRadius: "4px",
+                            cursor: "pointer"
+                        }}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
 
             <button
