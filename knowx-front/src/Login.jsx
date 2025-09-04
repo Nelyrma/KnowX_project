@@ -20,13 +20,14 @@ const Login = () => {
     };
 
     return (
-        <div style={{ padding: '20px' }}>
+        <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto', textAlign: 'center' }}>
             <h2>Welcome back !</h2>
             <input
                 type="email"
                 placeholder='Email'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                style={{ margin: '10px 0', padding: '10px', width: '100%' }}
             />
             <br />
             <input
@@ -34,9 +35,23 @@ const Login = () => {
                 placeholder='Password'
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
+                style={{ margin: '10px 0', padding: '10px', width: '100%' }}
             />
             <br />
-            <button onClick={handleLogin}>Login</button>
+            <button 
+                onClick={handleLogin}
+                style={{ padding: '10px', width: '100%', margin: '10px 0' }}
+            >
+                Login
+            </button>
+            
+            <p>
+                Don't have an account?
+                <span onClick={() => navigate('/signup')} 
+                style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>
+                    Sign up
+                </span>
+            </p>
         </div>
     );
 };

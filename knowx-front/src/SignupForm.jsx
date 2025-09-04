@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 function SignupForm() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         first_name: "",
         last_name: "",
@@ -94,7 +96,10 @@ function SignupForm() {
             {message && <p>{message}</p>}
             <p>- or -</p>
             <p>
-                Have an account? <a href="/login">Sign in</a>
+                Have an account?
+                <span onClick={() => navigate('/login')} style={{ color: 'blue', cursor: 'pointer' }}>
+                     Sign in
+                </span>
             </p>
         </div>
     );
