@@ -26,7 +26,7 @@ const Home = () => {
                 onClick={() => navigate('/create-offer')}
                 style={{ marginBottom: '20px', padding: '10px' }}
             >
-                Create an offer
+                ➕ Create an offer
             </button>
             {offers.length === 0 ? (
                 <p>No offers available at this time.</p>
