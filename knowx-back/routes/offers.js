@@ -30,4 +30,25 @@ router.post('/', authenticateToken, async (req, res) => {
     }
 });
 
+router.delete('/:id', authenticateToken, async (req, res) => {
+    const offerId = req.params.id;
+    const userId = req.userId;
+
+    try {
+        // vérifier que l'offre appartient à l'utilsateur qui va la supprimer
+        const offer = await pool.query(
+            `SELECT * FROM offers
+            WHERE id = $1 AND user_id = $2`, [offerId, userId]);
+        
+        if (offer.rows.length === 0) {
+            return res.status(404).json({ error: 'Offer not found or not authorized' });
+        }
+        await pool.query('DELETE FROM offers WHERE id = $1', [offerId]);
+        res.json({ message: 'Offre supprimée avec succès' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 module.exports = router;
