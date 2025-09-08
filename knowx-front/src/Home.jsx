@@ -1,10 +1,28 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import theme from './theme';
 import { useNavigate } from "react-router-dom";
+import {
+    Container,
+    Typography,
+    Button,
+    Card,
+    CardContent,
+    CardActions,
+    Box,
+    AppBar,
+    Toolbar,
+    Grid,
+    TextField,
+    InputAdornment,
+    Chip
+} from '@mui/material';
+import { Logout, Person, Add, Search } from '@mui/icons-material';
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
     const [userId, setUserId] = useState(null); // pour stocker l'ID du user connecté
+    const [searchTerm, setSearchTerm] = useState(""); // state pour la recherche
     const navigate = useNavigate();
 
     // Vérification du token et récupération de l'user ID
@@ -62,100 +80,129 @@ const Home = () => {
         fetchOffers();
     }, [navigate]);
 
+    // Filtrage des offres basé sur la recherche
+    const filteredOffers = offers.filter(offer =>
+        offer.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        offer.skills_offered?.some(skill =>
+            skill.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+    );
+
     return (
-        <div>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <h1>Available Offers</h1>
-                <div>
-                    {/* Profile button */}
-                    <button 
-                        onClick={() => navigate('/profile')}
-                        style={{ 
-                            padding: "8px 16px", 
-                            backgroundColor: "#4CAF50", 
-                            color: "white", 
-                            border: "none", 
-                            borderRadius: "4px",
-                            cursor: "pointer",
-                            marginRight: "10px"
-                        }}
-                    >
-                        👤 Profile
-                    </button>
-                    
-                    {/* Logout button */}
-                    <button 
-                        onClick={handleLogout}
-                        style={{ 
-                            padding: "8px 16px", 
-                            backgroundColor: "#ff4444", 
-                            color: "white", 
-                            border: "none", 
-                            borderRadius: "4px",
-                            cursor: "pointer"
-                        }}
-                    >
+        <Container maxWidth="xl" sx={{ minHeight: '100vh', backgroundColor: 'background.default', p: 0 }}>
+            {/* Header */}
+            <AppBar position="static">
+                <Toolbar>
+                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                        KnowX
+                    </Typography>
+                    <Button color="inherit" startIcon={<Person />} onClick={() => navigate('/profile')}>
+                        Profile
+                    </Button>
+                    <Button color="inherit" startIcon={<Logout />} onClick={handleLogout}>
                         Logout
-                    </button>
-                </div>
-            </div>
+                    </Button>
+                </Toolbar>
+            </AppBar>
 
-            <button
-                onClick={() => navigate('/create-offer')}
-                style={{ marginBottom: '20px', padding: '10px' }}
-            >
-                ➕ Create an offer
-            </button>
-            
-            {offers.length === 0 ? (
-                <p>No offers available at this time.</p>
-            ) : (
-                offers.map(offer => (
-                    <div key={offer.id} style={{
-                        border: '1px solid #ccc',
-                        padding: '10px',
-                        margin: '10px',
-                        position: 'relative'
-                    }}>
-                        {/* Bouton de suppression pour le créateur de l'offre */}
-                        {userId === offer.user_id && (
-                            <button
-                                onClick={() => handleDeleteOffer(offer.id)}
-                                style={{
-                                    position: 'absolute',
-                                    top: '10px',
-                                    right: '10px',
-                                    background: '#ff4444',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '4px',
-                                    padding: '5px 10px',
-                                    cursor: 'pointer'
-                                }}
-                            >
-                                🗑️
-                            </button>
-                        )}
+            {/* HERO SECTION & SEARCH BAR */}
+            <Box sx={{
+                textAlign: 'center',
+                py: 8,
+                background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
+            }}>
+                <Container maxWidth="md">
+                    <TextField
+                        fullWidth
+                        placeholder="Search for a skill..."
+                        variant="outlined"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        sx={{ maxWidth: 600, mx: 'auto', my: 4 }}
+                        InputProps={{
+                            startAdornment: (
+                                <InputAdornment position="start">
+                                    <Search />
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Container>
+            </Box>
 
-                        <h3>{offer.title}</h3>
-                        <p><strong>Offered skills:</strong> {offer.skills_offered?.join(', ')}</p>
-                        <p><strong>Description:</strong> {offer.description}</p>
+            {/* Create Button */}
+            <Box textAlign="center" sx={{ mb: 4 }}>
+                <Button 
+                    variant="contained" 
+                    startIcon={<Add />}
+                    onClick={() => navigate('/create-offer')}
+                    size="large"
+                >
+                    Create Offer
+                </Button>
+            </Box>
 
-                        {/* Afficher le créateur d'offres si ce n'est pas le user courant */}
-                        {/* {userId !== offer.user_id && (
-                            <p style={{
-                                textAlign: 'right',
-                                fontSize: '0.9em',
-                                color: '#4a5568',
-                                margin: '5px 0 0 0'
-                            }}>
-                                By: {offer.first_name} {offer.last_name}
-                            </p>
-                        )} */}
-                    </div>
-                ))
-            )}
-        </div>
+            {/* Offers grid */}
+            <Grid container spacing={3}>
+                {filteredOffers.length === 0 ? (
+                    <Grid item xs={12}>
+                        <Typography variant="h6" textAlign="center" color="textSecondary">
+                            {searchTerm ? 'No matching offers found.' : 'No offers available yet.'}
+                        </Typography>
+                    </Grid>
+                ) : (
+                    filteredOffers.map((offer) => (
+                        <Grid item xs={12} sm={6} md={4} key={offer.id}>
+                            {/* CARTE STYLEE MOCKUP */}
+                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
+                                <CardContent sx={{ flexGrow: 1 }}>
+                                    {/* CHIP pour la compétence principale */}
+                                    <Chip
+                                        label={`Need help with ${offer.skills_offered?.[0] || 'Unknown'}`}
+                                        color="primary"
+                                        variant="filled"
+                                        sx={{ mb: 2, fontWeight: 'bold' }}
+                                    />
+                                    <Typography variant="h6" gutterBottom>
+                                        {offer.title}
+                                    </Typography>
+                                    <Typography color="textSecondary" gutterBottom>
+                                        {/* On suppose que 'user' est un objet avec un 'name'. Adapte selon ton API */}
+                                        Posted by: {offer.user?.name || 'Anonymous'}
+                                    </Typography>
+                                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+                                        {offer.description && offer.description.length > 100
+                                            ? `${offer.description.substring(0, 100)}...`
+                                            : offer.description
+                                        }
+                                    </Typography>
+                                </CardContent>
+                                <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
+                                    {/* BOUTON VIEW */}
+                                    <Button
+                                        size="small"
+                                        variant="outlined"
+                                        onClick={() => navigate(`/offer/${offer.id}`)} // Tu devras créer cette page
+                                    >
+                                        VIEW
+                                    </Button>
+                                    {/* BOUTON DELETE conditionnel */}
+                                    {userId === offer.user_id && (
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            onClick={() => handleDeleteOffer(offer.id)}
+                                        >
+                                            Delete
+                                        </Button>
+                                    )}
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))
+                )}
+            </Grid>
+        </Container>
     );
 };
 
