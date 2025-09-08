@@ -140,6 +140,18 @@ const Home = () => {
                         <h3>{offer.title}</h3>
                         <p><strong>Offered skills:</strong> {offer.skills_offered?.join(', ')}</p>
                         <p><strong>Description:</strong> {offer.description}</p>
+
+                        {/* Afficher le créateur d'offres si ce n'est pas le user courant */}
+                        {/* {userId !== offer.user_id && (
+                            <p style={{
+                                textAlign: 'right',
+                                fontSize: '0.9em',
+                                color: '#4a5568',
+                                margin: '5px 0 0 0'
+                            }}>
+                                By: {offer.first_name} {offer.last_name}
+                            </p>
+                        )} */}
                     </div>
                 ))
             )}
