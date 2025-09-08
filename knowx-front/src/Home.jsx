@@ -4,17 +4,26 @@ import { useNavigate } from "react-router-dom";
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
+    const [userId, setUserId] = useState(null); // pour stocker l'ID du user connecté
     const navigate = useNavigate();
 
-    // Vérification du token et de déconnexion
+    // Vérification du token et récupération de l'user ID
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (!token) {
             navigate("/login");
             return;
         }
+        // décoder le token pour obtenir l'user ID
+        try {
+            const decoded = JSON.parse(atob(token.split('.')[1]));
+            setUserId(decoded.userId);
+        } catch (err) {
+            console.error('Error decoding token:', err);
+        }
     }, [navigate]);
 
+    // déconnexion
     const handleLogout = () => {
         localStorage.removeItem("token");
         navigate("/login");
@@ -108,24 +117,26 @@ const Home = () => {
                         margin: '10px',
                         position: 'relative'
                     }}>
-                        {/* Bouton de suppression */}
-                        <button
-                            onClick={() => handleDeleteOffer(offer.id)}
-                            style={{
-                                position: 'absolute',
-                                top: '10px',
-                                right: '10px',
-                                background: '#ff4444',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                padding: '5px 10px',
-                                cursor: 'pointer'
-                            }}
-                        >
-                            🗑️
-                        </button>
-                        
+                        {/* Bouton de suppression pour le créateur de l'offre */}
+                        {userId === offer.user_id && (
+                            <button
+                                onClick={() => handleDeleteOffer(offer.id)}
+                                style={{
+                                    position: 'absolute',
+                                    top: '10px',
+                                    right: '10px',
+                                    background: '#ff4444',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '4px',
+                                    padding: '5px 10px',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                🗑️
+                            </button>
+                        )}
+
                         <h3>{offer.title}</h3>
                         <p><strong>Offered skills:</strong> {offer.skills_offered?.join(', ')}</p>
                         <p><strong>Description:</strong> {offer.description}</p>
