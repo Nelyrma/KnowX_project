@@ -20,6 +20,24 @@ const Home = () => {
         navigate("/login");
     };
 
+    // Fonction de suppression d'offre
+    const handleDeleteOffer = async (offerId) => {
+        if (!window.confirm('Are you sure you want to delete this offer?')) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            await axios.delete(`http://localhost:3001/offers/${offerId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            
+            // Mettre à jour la liste des offres
+            setOffers(offers.filter(offer => offer.id !== offerId));
+            alert('✅ Offer deleted!');
+        } catch (err) {
+            alert('❌ Error: ' + (err.response?.data?.error || err.message));
+        }
+    };
+
     useEffect(() => {
         const fetchOffers = async () => {
             try {
@@ -87,8 +105,27 @@ const Home = () => {
                     <div key={offer.id} style={{
                         border: '1px solid #ccc',
                         padding: '10px',
-                        margin: '10px'
+                        margin: '10px',
+                        position: 'relative'
                     }}>
+                        {/* Bouton de suppression */}
+                        <button
+                            onClick={() => handleDeleteOffer(offer.id)}
+                            style={{
+                                position: 'absolute',
+                                top: '10px',
+                                right: '10px',
+                                background: '#ff4444',
+                                color: 'white',
+                                border: 'none',
+                                borderRadius: '4px',
+                                padding: '5px 10px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            🗑️
+                        </button>
+                        
                         <h3>{offer.title}</h3>
                         <p><strong>Offered skills:</strong> {offer.skills_offered?.join(', ')}</p>
                         <p><strong>Description:</strong> {offer.description}</p>
