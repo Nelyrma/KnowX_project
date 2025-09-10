@@ -52,6 +52,22 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// GET /api/offers/:id - Récupérer une offre spécifique par son ID
+router.get('/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query('SELECT * FROM offers WHERE id = $1', [id]);
+        
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+        res.json(result.rows[0]);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 // PUT /api/offers/:id - Mettre à jour une offre
 router.put('/:id', authenticateToken, async (req, res) => {
     const { id } = req.params.id;

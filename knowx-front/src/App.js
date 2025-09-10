@@ -7,7 +7,9 @@ import Login from './Login';
 import Profile from './Profile';
 import Home from './Home';
 import CreateOffer from './CreateOffer';
+import EditOffer from './EditOffer';
 import ProtectedRoute from './ProtectedRoute';
+
 
 function App() {
     return (
@@ -28,6 +30,14 @@ function App() {
                     />
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/create-offer" element={<CreateOffer />} />
+                    <Route
+                        path="/edit-offer/:id"
+                        element={
+                            <ProtectedRoute>
+                                <EditOffer />
+                            </ProtectedRoute>
+                        }
+                    />
                 </Routes>
             </Router>
         </ThemeProvider>
