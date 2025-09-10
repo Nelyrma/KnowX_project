@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
+const { error } = require('console');
 
 router.get('/', async (req, res) => {
     try {
@@ -35,7 +36,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     const userId = req.userId;
 
     try {
-        // vérifier que l'offre appartient à l'utilsateur qui va la supprimer
+        // vérifier que l'offre appartient à l'utilisateur qui va la supprimer
         const offer = await pool.query(
             `SELECT * FROM offers
             WHERE id = $1 AND user_id = $2`, [offerId, userId]);
@@ -45,6 +46,41 @@ router.delete('/:id', authenticateToken, async (req, res) => {
         }
         await pool.query('DELETE FROM offers WHERE id = $1', [offerId]);
         res.json({ message: 'Offre supprimée avec succès' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
+// PUT /api/offers/:id - Mettre à jour une offre
+router.put('/:id', authenticateToken, async (req, res) => {
+    const { id } = req.params.id;
+    const userId = req.userId; // ID du user connecté
+    const { title, description, skills_offered } = req.body;
+
+    try {
+        // 1. Vérifier que l'offre appartient à l'utilisateur
+        const offer = await pool.query(
+            `SELECT * FROM offers WHERE id = $1 AND user_id = $2`,
+            [offerId, userId]
+        );
+
+        if (offer.rows.length === 0) {
+            return res.status(404).json({ error: 'Offer not found or not authorized' });
+        }
+
+        // 2. Mettre à jour l'offre
+        const result = await pool.query(
+            `UPDATE offers 
+             SET title = $1, skills_offered = $2, description = $3
+             WHERE id = $4
+             RETURNING *`,
+            [title, skills_offered, description, offerId]
+        );
+
+        // 3. Renvoyer l'offre mise à jour
+        res.json({ message: 'Offer successfully updated!', offer: result.rows[0] });
+
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server Error' });
