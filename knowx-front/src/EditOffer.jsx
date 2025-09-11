@@ -115,7 +115,7 @@ const EditOffer = () => {
 
             <TextField
                 fullWidth
-                label="Skills offered"
+                label="Skills wanted"
                 value={currentSkill}
                 onChange={(e) => setCurrentSkill(e.target.value)}
                 margin="normal"

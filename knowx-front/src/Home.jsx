@@ -186,15 +186,26 @@ const Home = () => {
                                     >
                                         VIEW
                                     </Button>
-                                    {/* BOUTON DELETE conditionnel */}
+                                    {/* Boutons DELETE et EDIT pour le créateur de l'offre */}
                                     {userId === offer.user_id && (
-                                        <Button
-                                            size="small"
-                                            color="error"
-                                            onClick={() => handleDeleteOffer(offer.id)}
-                                        >
-                                            Delete
-                                        </Button>
+                                        <Box sx={{ display: 'flex', gap: 1 }}>
+                                            {/* BOUTON EDIT */}
+                                            <Button
+                                                size="small"
+                                                variant="contained"
+                                                onClick={() => navigate(`/edit-offer/${offer.id}`)} // Redirige vers la page d'édition
+                                            >
+                                                Edit
+                                            </Button>
+                                            {/* BOUTON DELETE */}
+                                            <Button
+                                                size="small"
+                                                color="error"
+                                                onClick={() => handleDeleteOffer(offer.id)}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </Box>
                                     )}
                                 </CardActions>
                             </Card>
