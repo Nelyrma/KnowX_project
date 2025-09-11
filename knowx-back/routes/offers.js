@@ -70,7 +70,7 @@ router.get('/:id', async (req, res) => {
 
 // PUT /api/offers/:id - Mettre à jour une offre
 router.put('/:id', authenticateToken, async (req, res) => {
-    const { id } = req.params.id;
+    const offerId = req.params.id;
     const userId = req.userId; // ID du user connecté
     const { title, description, skills_offered } = req.body;
 

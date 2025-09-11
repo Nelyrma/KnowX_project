@@ -12,7 +12,7 @@ const CreateOffer = () => {
         e.preventDefault();
         const token = localStorage.getItem('token');
         try {
-            await axios.post('http://localhost:3001/offers', {
+            await axios.post('http://localhost:3001/api/offers', {
                 title,
                 skills_offered: skills.split(',').map(skill => skill.trim()),
                 description

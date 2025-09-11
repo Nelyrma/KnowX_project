@@ -53,7 +53,7 @@ const Home = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:3001/offers/${offerId}`, {
+            await axios.delete(`http://localhost:3001/api/offers/${offerId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
@@ -68,7 +68,7 @@ const Home = () => {
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const res = await axios.get('http://localhost:3001/offers');
+                const res = await axios.get('http://localhost:3001/api/offers');
                 setOffers(res.data);
             } catch (err) {
                 console.error('Error loading offers:', err);

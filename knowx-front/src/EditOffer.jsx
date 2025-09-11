@@ -29,13 +29,18 @@ const EditOffer = () => {
         const fetchOffer = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get(`http://localhost:3001/offers/${id}`, {
+                console.log("🔄 Fetching offer with ID:", id);
+                console.log("Using token:", token ? "Token present" : "No token");
+
+                const res = await axios.get(`http://localhost:3001/api/offers/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
+                console.log("✅ Offer data received:", res.data);
                 setOfferData(res.data);
                 setIsLoading(false);
             } catch (err) {
                 console.error('Error loading offer:', err);
+                console.error('Error response:', err.response);
                 alert('The offer could not be loaded.');
                 navigate('/home');
             }
