@@ -8,6 +8,7 @@ import Profile from './Profile';
 import Home from './Home';
 import CreateOffer from './CreateOffer';
 import EditOffer from './EditOffer';
+import OfferDetail from './OfferDetail';
 import ProtectedRoute from './ProtectedRoute';
 
 
@@ -35,6 +36,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <EditOffer />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/offer/:id"
+                        element={
+                            <ProtectedRoute>
+                                <OfferDetail />
                             </ProtectedRoute>
                         }
                     />

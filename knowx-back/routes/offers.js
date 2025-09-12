@@ -45,7 +45,7 @@ router.delete('/:id', authenticateToken, async (req, res) => {
             return res.status(404).json({ error: 'Offer not found or not authorized' });
         }
         await pool.query('DELETE FROM offers WHERE id = $1', [offerId]);
-        res.json({ message: 'Offre supprimée avec succès' });
+        res.json({ message: 'Offer successfully deleted' });
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server Error' });
@@ -56,12 +56,29 @@ router.delete('/:id', authenticateToken, async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const result = await pool.query('SELECT * FROM offers WHERE id = $1', [id]);
+        const result = await pool.query(
+            `SELECT
+                o.*,
+                u.first_name,
+                u.last_name
+            FROM offers o
+            LEFT JOIN users u ON o.user_id = u.id
+            WHERE o.id = $1`,
+            [id]
+        );
         
         if (result.rows.length === 0) {
             return res.status(404).json({ error: 'Offer not found' });
         }
-        res.json(result.rows[0]);
+
+        // formater les données pour inclure le nom complet
+        const offer = result.rows[0];
+        const responseData = {
+            ...offer,
+            user_name: `${offer.first_name} ${offer.last_name}`.trim() || 'Anonymous'
+        };
+
+        res.json(responseData);
     } catch (err) {
         console.error(err);
         res.status(500).json({ error: 'Server Error' });
