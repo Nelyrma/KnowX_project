@@ -111,9 +111,6 @@ const Profile = () => {
                         <Typography variant="body2" color="text.secondary">
                             {user.email}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                            Member since: {new Date(user.created_at).toLocaleDateString()}
-                        </Typography>
                     </Box>
                 </Box>
 
