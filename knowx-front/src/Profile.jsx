@@ -84,16 +84,33 @@ const Profile = () => {
     return (
         <Container maxWidth="md">
             {/* Header */}
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 4, pt: 3 }}>
+            <Box sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                mb: 4, 
+                pt: 3,
+                gap: 3  // ← Ajoute de l'espace entre les éléments
+            }}>
                 <Button 
                     startIcon={<ArrowBack />} 
                     onClick={() => navigate('/home')}
-                    sx={{ mr: 3, color: 'primary.main' }}
+                    sx={{ 
+                        color: 'primary.main',
+                        minWidth: '100px'  // ← Largeur fixe pour plus de stabilité
+                    }}
                     variant="outlined"
                 >
                     Back
                 </Button>
-                <Typography variant="h4" component="h1" sx={{ fontWeight: 'bold' }}>
+                <Typography 
+                    variant="h4" 
+                    component="h1" 
+                    sx={{ 
+                        fontWeight: 'bold',
+                        flexGrow: 1,  // ← Prend tout l'espace restant
+                        textAlign: 'center'  // ← Centre le titre
+                    }}
+                >
                     Edit My Profile
                 </Typography>
             </Box>
