@@ -166,10 +166,6 @@ const Home = () => {
                                     <Typography variant="h6" gutterBottom>
                                         {offer.title}
                                     </Typography>
-                                    <Typography color="textSecondary" gutterBottom>
-                                        {/* On suppose que 'user' est un objet avec un 'name'. Adapte selon ton API */}
-                                        Posted by: {offer.user?.name || 'Anonymous'}
-                                    </Typography>
                                     <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
                                         {offer.description && offer.description.length > 100
                                             ? `${offer.description.substring(0, 100)}...`
