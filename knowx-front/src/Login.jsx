@@ -1,58 +1,127 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import {
+  Container,
+  Paper,
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Alert
+} from '@mui/material';
+import { Login as LoginIcon, ArrowBack } from '@mui/icons-material';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = async () => {
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setLoading(true);
+        setError('');
+
         try {
             const res = await axios.post('http://localhost:3001/auth/login', { email, password });
-            localStorage.setItem('token', res.data.token);  // stock the token
-            alert('Connected !');
-            navigate('/home'); // Redirect to the home page
+            localStorage.setItem('token', res.data.token);
+            
+            // Message de bienvenue plus personnalisé
+            alert(`Welcome back! 🎉`);
+            navigate('/home');
         } catch (err) {
-            alert('Connection error : ' + (err.response?.data?.error ||
-                err.message));
+            setError(err.response?.data?.error || 'Connection error');
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div style={{ padding: '20px', maxWidth: '400px', margin: 'auto', textAlign: 'center' }}>
-            <h2>Welcome back !</h2>
-            <input
-                type="email"
-                placeholder='Email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                style={{ margin: '10px 0', padding: '10px', width: '100%' }}
-            />
-            <br />
-            <input
-                type="password"
-                placeholder='Password'
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                style={{ margin: '10px 0', padding: '10px', width: '100%' }}
-            />
-            <br />
-            <button 
-                onClick={handleLogin}
-                style={{ padding: '10px', width: '100%', margin: '10px 0' }}
-            >
-                Login
-            </button>
-            
-            <p>
-                Don't have an account?
-                <span onClick={() => navigate('/signup')} 
-                style={{ color: 'blue', cursor: 'pointer', textDecoration: 'underline' }}>
-                    Sign up
-                </span>
-            </p>
-        </div>
+        <Container maxWidth="sm">
+            {/* Header */}
+            <Box sx={{ textAlign: 'center', mb: 2, mt: 4 }}>
+                <Button 
+                    startIcon={<ArrowBack />} 
+                    onClick={() => navigate('/')}
+                    sx={{ mb: 2 }}
+                    color="primary"
+                >
+                    Back
+                </Button>
+                <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+                    Welcome Back
+                </Typography>
+                <Typography variant="body1" color="text.secondary">
+                    Sign in to your KnowX account
+                </Typography>
+            </Box>
+
+            {/* Formulaire */}
+            <Paper elevation={3} sx={{ p: 4 }}>
+                <form onSubmit={handleLogin}>
+                    <TextField
+                        fullWidth
+                        label="Email Address"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        margin="normal"
+                        variant="outlined"
+                        placeholder="Enter your email"
+                    />
+
+                    <TextField
+                        fullWidth
+                        label="Password"
+                        type="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        margin="normal"
+                        variant="outlined"
+                        placeholder="Enter your password"
+                    />
+
+                    {error && (
+                        <Alert severity="error" sx={{ mt: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
+
+                    <Button
+                        type="submit"
+                        disabled={loading}
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        startIcon={<LoginIcon />}
+                        sx={{ mt: 3, py: 1.5 }}
+                    >
+                        {loading ? "Signing in..." : "Sign In"}
+                    </Button>
+                </form>
+
+                <Box sx={{ textAlign: 'center', mt: 3 }}>
+                    <Typography variant="body2" color="text.secondary">
+                        Don't have an account?{" "}
+                        <Link 
+                            to="/signup" 
+                            style={{ 
+                                color: '#ff9bb3', 
+                                textDecoration: 'none',
+                                fontWeight: 'bold',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Sign up
+                        </Link>
+                    </Typography>
+                </Box>
+            </Paper>
+        </Container>
     );
 };
 
