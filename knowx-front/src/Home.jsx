@@ -88,7 +88,7 @@ const Home = () => {
 
     return (
         <Container maxWidth="xl" sx={{ minHeight: '100vh', backgroundColor: 'background.default', p: 0 }}>
-            {/* Header - MODIFIÉ */}
+            {/* Header */}
             <AppBar position="static">
                 <Toolbar>
                     {/* Logo/Titre à gauche */}
@@ -102,7 +102,7 @@ const Home = () => {
 
                     {/* Actions principales à droite */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {/* Bouton Create Offer - visible et important */}
+                        {/* Bouton Create Offer */}
                         <Button 
                             color="inherit" 
                             startIcon={<Add />} 
@@ -182,9 +182,13 @@ const Home = () => {
                 </Container>
             </Box>
 
-            {/* Offers grid */}
+            {/* Offers grid - VERSION AMÉLIORÉE */}
             <Container maxWidth="lg" sx={{ py: 6 }}>
-                <Grid container spacing={3}>
+                <Grid 
+                    container 
+                    spacing={3} 
+                    justifyContent="center"
+                >
                     {filteredOffers.length === 0 ? (
                         <Grid item xs={12}>
                             <Typography variant="h6" textAlign="center" color="textSecondary">
@@ -193,8 +197,29 @@ const Home = () => {
                         </Grid>
                     ) : (
                         filteredOffers.map((offer) => (
-                            <Grid item xs={12} sm={6} md={4} key={offer.id}>
-                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
+                            <Grid 
+                                item 
+                                xs={12} sm={6} md={4} lg={3}
+                                key={offer.id}
+                                sx={{
+                                    display: 'flex',
+                                    justifyContent: 'center'
+                                }}
+                            >
+                                <Card 
+                                    sx={{ 
+                                        height: '100%', 
+                                        display: 'flex', 
+                                        flexDirection: 'column', 
+                                        transition: '0.2s', 
+                                        '&:hover': { 
+                                            transform: 'translateY(-4px)', 
+                                            boxShadow: 6 
+                                        },
+                                        width: '100%',
+                                        maxWidth: 320
+                                    }}
+                                >
                                     <CardContent sx={{ flexGrow: 1 }}>
                                         <Chip
                                             label={`Need help with ${offer.skills_offered?.[0] || 'Unknown'}`}
@@ -202,14 +227,19 @@ const Home = () => {
                                             variant="filled"
                                             sx={{ mb: 2, fontWeight: 'bold' }}
                                         />
-                                        <Typography variant="h6" gutterBottom>
+                                        <Typography variant="h6" gutterBottom sx={{ minHeight: '64px' }}>
                                             {offer.title}
                                         </Typography>
-                                        <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-                                            {offer.description && offer.description.length > 100
-                                                ? `${offer.description.substring(0, 100)}...`
-                                                : offer.description
-                                            }
+                                        <Typography variant="body2" sx={{ 
+                                            mt: 1, 
+                                            color: 'text.secondary', 
+                                            minHeight: '80px',
+                                            display: '-webkit-box',
+                                            WebkitLineClamp: 3,
+                                            WebkitBoxOrient: 'vertical',
+                                            overflow: 'hidden'
+                                        }}>
+                                            {offer.description}
                                         </Typography>
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
