@@ -10,6 +10,7 @@ import CreateOffer from './CreateOffer';
 import EditOffer from './EditOffer';
 import OfferDetail from './OfferDetail';
 import ProtectedRoute from './ProtectedRoute';
+import MessagesPage from './MessagesPage';
 
 
 function App() {
@@ -44,6 +45,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <OfferDetail />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/messages"
+                        element={
+                            <ProtectedRoute>
+                                <MessagesPage />
                             </ProtectedRoute>
                         }
                     />

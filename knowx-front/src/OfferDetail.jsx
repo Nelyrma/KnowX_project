@@ -11,12 +11,14 @@ import {
     Divider
 } from '@mui/material';
 import { ArrowBack } from '@mui/icons-material';
+import MessageForm from './MessageForm';
 
 const OfferDetail = () => {
-    const { id } = useParams(); // Récupère l'ID de l'URL
+    const { id } = useParams();
     const navigate = useNavigate();
     const [offer, setOffer] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [messageFormOpen, setMessageFormOpen] = useState(false); // State pour le formulaire
 
     useEffect(() => {
         const fetchOffer = async () => {
@@ -75,11 +77,25 @@ const OfferDetail = () => {
                     </Typography>
                 </Box>
 
-                {/* Bouton de contact */}
-                <Button variant="contained" size="large" sx={{ mt: 3 }}>
-                    Contact
+                {/* BOUTON CONTACT MODIFIÉ */}
+                <Button 
+                    variant="contained" 
+                    size="large" 
+                    sx={{ mt: 3 }}
+                    onClick={() => setMessageFormOpen(true)} // Ouvre le formulaire
+                >
+                    💬 Contact {offer.user_name}
                 </Button>
             </Paper>
+
+            {/* FORMULAIRE DE MESSAGE - AJOUTÉ */}
+            <MessageForm
+                offerId={offer.id}
+                receiverId={offer.user_id}
+                receiverName={offer.user_name}
+                open={messageFormOpen}
+                onClose={() => setMessageFormOpen(false)}
+            />
         </Container>
     );
 };

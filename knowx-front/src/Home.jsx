@@ -17,12 +17,12 @@ import {
     InputAdornment,
     Chip
 } from '@mui/material';
-import { Logout, Person, Add, Search } from '@mui/icons-material';
+import { Logout, Person, Add, Search, Email } from '@mui/icons-material';
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
-    const [userId, setUserId] = useState(null); // pour stocker l'ID du user connecté
-    const [searchTerm, setSearchTerm] = useState(""); // state pour la recherche
+    const [userId, setUserId] = useState(null);
+    const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
     // Vérification du token et récupération de l'user ID
@@ -32,7 +32,6 @@ const Home = () => {
             navigate("/login");
             return;
         }
-        // décoder le token pour obtenir l'user ID
         try {
             const decoded = JSON.parse(atob(token.split('.')[1]));
             setUserId(decoded.userId);
@@ -57,7 +56,6 @@ const Home = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
-            // Mettre à jour la liste des offres
             setOffers(offers.filter(offer => offer.id !== offerId));
             alert('✅ Offer deleted!');
         } catch (err) {
@@ -90,18 +88,66 @@ const Home = () => {
 
     return (
         <Container maxWidth="xl" sx={{ minHeight: '100vh', backgroundColor: 'background.default', p: 0 }}>
-            {/* Header */}
+            {/* Header - MODIFIÉ */}
             <AppBar position="static">
                 <Toolbar>
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+                    {/* Logo/Titre à gauche */}
+                    <Typography variant="h6" sx={{ 
+                        flexGrow: 1, 
+                        fontWeight: 'bold',
+                        cursor: 'pointer'
+                    }} onClick={() => navigate('/home')}>
                         KnowX
                     </Typography>
-                    <Button color="inherit" startIcon={<Person />} onClick={() => navigate('/profile')}>
-                        Profile
-                    </Button>
-                    <Button color="inherit" startIcon={<Logout />} onClick={handleLogout}>
-                        Logout
-                    </Button>
+
+                    {/* Actions principales à droite */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {/* Bouton Create Offer - visible et important */}
+                        <Button 
+                            color="inherit" 
+                            startIcon={<Add />} 
+                            onClick={() => navigate('/create-offer')}
+                            sx={{ 
+                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }
+                            }}
+                        >
+                            Create Offer
+                        </Button>
+
+                        {/* Séparateur visuel */}
+                        <Box sx={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.3)', mx: 1 }} />
+
+                        {/* Messages */}
+                        <Button 
+                            color="inherit" 
+                            startIcon={<Email />} 
+                            onClick={() => navigate('/messages')}
+                        >
+                            Messages
+                        </Button>
+
+                        {/* Profile */}
+                        <Button 
+                            color="inherit" 
+                            startIcon={<Person />} 
+                            onClick={() => navigate('/profile')}
+                        >
+                            Profile
+                        </Button>
+
+                        {/* Séparateur visuel */}
+                        <Box sx={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.3)', mx: 1 }} />
+
+                        {/* Logout */}
+                        <Button 
+                            color="inherit" 
+                            startIcon={<Logout />} 
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </Box>
                 </Toolbar>
             </AppBar>
 
@@ -112,13 +158,19 @@ const Home = () => {
                 background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
             }}>
                 <Container maxWidth="md">
+                    <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 3 }}>
+                        Share Your Skills
+                    </Typography>
+                    <Typography variant="h5" component="h2" gutterBottom sx={{ color: 'text.secondary', mb: 4 }}>
+                        Find help or offer your expertise
+                    </Typography>
                     <TextField
                         fullWidth
-                        placeholder="Search for a skill..."
+                        placeholder="Search for Python, React, Design..."
                         variant="outlined"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        sx={{ maxWidth: 600, mx: 'auto', my: 4 }}
+                        sx={{ maxWidth: 600, mx: 'auto' }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -130,85 +182,69 @@ const Home = () => {
                 </Container>
             </Box>
 
-            {/* Create Button */}
-            <Box textAlign="center" sx={{ mb: 4 }}>
-                <Button 
-                    variant="contained" 
-                    startIcon={<Add />}
-                    onClick={() => navigate('/create-offer')}
-                    size="large"
-                >
-                    Create Offer
-                </Button>
-            </Box>
-
             {/* Offers grid */}
-            <Grid container spacing={3}>
-                {filteredOffers.length === 0 ? (
-                    <Grid item xs={12}>
-                        <Typography variant="h6" textAlign="center" color="textSecondary">
-                            {searchTerm ? 'No matching offers found.' : 'No offers available yet.'}
-                        </Typography>
-                    </Grid>
-                ) : (
-                    filteredOffers.map((offer) => (
-                        <Grid item xs={12} sm={6} md={4} key={offer.id}>
-                            {/* CARTE STYLEE MOCKUP */}
-                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
-                                <CardContent sx={{ flexGrow: 1 }}>
-                                    {/* CHIP pour la compétence principale */}
-                                    <Chip
-                                        label={`Need help with ${offer.skills_offered?.[0] || 'Unknown'}`}
-                                        color="primary"
-                                        variant="filled"
-                                        sx={{ mb: 2, fontWeight: 'bold' }}
-                                    />
-                                    <Typography variant="h6" gutterBottom>
-                                        {offer.title}
-                                    </Typography>
-                                    <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
-                                        {offer.description && offer.description.length > 100
-                                            ? `${offer.description.substring(0, 100)}...`
-                                            : offer.description
-                                        }
-                                    </Typography>
-                                </CardContent>
-                                <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
-                                    {/* BOUTON VIEW */}
-                                    <Button
-                                        size="small"
-                                        variant="outlined"
-                                        onClick={() => navigate(`/offer/${offer.id}`)} // Tu devras créer cette page
-                                    >
-                                        VIEW
-                                    </Button>
-                                    {/* Boutons DELETE et EDIT pour le créateur de l'offre */}
-                                    {userId === offer.user_id && (
-                                        <Box sx={{ display: 'flex', gap: 1 }}>
-                                            {/* BOUTON EDIT */}
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                onClick={() => navigate(`/edit-offer/${offer.id}`)} // Redirige vers la page d'édition
-                                            >
-                                                Edit
-                                            </Button>
-                                            {/* BOUTON DELETE */}
-                                            <Button
-                                                size="small"
-                                                color="error"
-                                                onClick={() => handleDeleteOffer(offer.id)}
-                                            >
-                                                Delete
-                                            </Button>
-                                        </Box>
-                                    )}
-                                </CardActions>
-                            </Card>
+            <Container maxWidth="lg" sx={{ py: 6 }}>
+                <Grid container spacing={3}>
+                    {filteredOffers.length === 0 ? (
+                        <Grid item xs={12}>
+                            <Typography variant="h6" textAlign="center" color="textSecondary">
+                                {searchTerm ? 'No matching offers found.' : 'No offers available yet.'}
+                            </Typography>
                         </Grid>
-                    ))
-                )}
-            </Grid>
+                    ) : (
+                        filteredOffers.map((offer) => (
+                            <Grid item xs={12} sm={6} md={4} key={offer.id}>
+                                <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', transition: '0.2s', '&:hover': { transform: 'translateY(-4px)', boxShadow: 6 } }}>
+                                    <CardContent sx={{ flexGrow: 1 }}>
+                                        <Chip
+                                            label={`Need help with ${offer.skills_offered?.[0] || 'Unknown'}`}
+                                            color="primary"
+                                            variant="filled"
+                                            sx={{ mb: 2, fontWeight: 'bold' }}
+                                        />
+                                        <Typography variant="h6" gutterBottom>
+                                            {offer.title}
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ mt: 1, color: 'text.secondary' }}>
+                                            {offer.description && offer.description.length > 100
+                                                ? `${offer.description.substring(0, 100)}...`
+                                                : offer.description
+                                            }
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
+                                        <Button
+                                            size="small"
+                                            variant="outlined"
+                                            onClick={() => navigate(`/offer/${offer.id}`)}
+                                        >
+                                            VIEW
+                                        </Button>
+                                        {userId === offer.user_id && (
+                                            <Box sx={{ display: 'flex', gap: 1 }}>
+                                                <Button
+                                                    size="small"
+                                                    variant="contained"
+                                                    onClick={() => navigate(`/edit-offer/${offer.id}`)}
+                                                >
+                                                    Edit
+                                                </Button>
+                                                <Button
+                                                    size="small"
+                                                    color="error"
+                                                    onClick={() => handleDeleteOffer(offer.id)}
+                                                >
+                                                    Delete
+                                                </Button>
+                                            </Box>
+                                        )}
+                                    </CardActions>
+                                </Card>
+                            </Grid>
+                        ))
+                    )}
+                </Grid>
+            </Container>
         </Container>
     );
 };
