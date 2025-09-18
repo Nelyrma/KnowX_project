@@ -52,6 +52,21 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// GET /api/offers/my-offers - Récupère les offres de l'utilisateur connecté
+router.get('/my-offers', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const result = await pool.query(
+            'SELECT * FROM offers WHERE user_id = $1 ORDER BY created_at DESC',
+            [userId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server Error' });
+    }
+});
+
 // GET /api/offers/:id - Récupérer une offre spécifique par son ID
 router.get('/:id', async (req, res) => {
     try {

@@ -17,7 +17,7 @@ import {
     InputAdornment,
     Chip
 } from '@mui/material';
-import { Logout, Person, Add, Search, Email } from '@mui/icons-material';
+import { Logout, Person, Add, Search, Email, List } from '@mui/icons-material';
 
 const Home = () => {
     const [offers, setOffers] = useState([]);
@@ -46,28 +46,16 @@ const Home = () => {
         navigate("/login");
     };
 
-    // Fonction de suppression d'offre
-    const handleDeleteOffer = async (offerId) => {
-        if (!window.confirm('Are you sure you want to delete this offer?')) return;
-
-        try {
-            const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:3001/api/offers/${offerId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            
-            setOffers(offers.filter(offer => offer.id !== offerId));
-            alert('✅ Offer deleted!');
-        } catch (err) {
-            alert('❌ Error: ' + (err.response?.data?.error || err.message));
-        }
-    };
-
     useEffect(() => {
         const fetchOffers = async () => {
             try {
-                const res = await axios.get('http://localhost:3001/api/offers');
-                setOffers(res.data);
+                const token = localStorage.getItem('token');
+                const res = await axios.get('http://localhost:3001/api/offers', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                // Filtrer pour exclure les offres de l'utilisateur connecté
+                const otherUsersOffers = res.data.filter(offer => offer.user_id !== userId);
+                setOffers(otherUsersOffers);
             } catch (err) {
                 console.error('Error loading offers:', err);
                 if (err.response?.status === 401) {
@@ -75,8 +63,10 @@ const Home = () => {
                 }
             }
         };
-        fetchOffers();
-    }, [navigate]);
+        if (userId) {
+            fetchOffers();
+        }
+    }, [navigate, userId]);
 
     // Filtrage des offres basé sur la recherche
     const filteredOffers = offers.filter(offer =>
@@ -125,6 +115,15 @@ const Home = () => {
                             onClick={() => navigate('/messages')}
                         >
                             Messages
+                        </Button>
+
+                        {/* My offers */}
+                        <Button
+                            color="inherit"
+                            startIcon={<List />}
+                            onClick={() => navigate('/my-offers')}
+                        >
+                            My offers
                         </Button>
 
                         {/* Profile */}
@@ -250,24 +249,6 @@ const Home = () => {
                                         >
                                             VIEW
                                         </Button>
-                                        {userId === offer.user_id && (
-                                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                                <Button
-                                                    size="small"
-                                                    variant="contained"
-                                                    onClick={() => navigate(`/edit-offer/${offer.id}`)}
-                                                >
-                                                    Edit
-                                                </Button>
-                                                <Button
-                                                    size="small"
-                                                    color="error"
-                                                    onClick={() => handleDeleteOffer(offer.id)}
-                                                >
-                                                    Delete
-                                                </Button>
-                                            </Box>
-                                        )}
                                     </CardActions>
                                 </Card>
                             </Grid>
