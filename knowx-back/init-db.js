@@ -11,7 +11,7 @@ const pool = new Pool({
     try {
         // create users table
         await pool.query(`
-            CREATE TABLE users (
+            CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
                 first_name VARCHAR(100) NOT NULL,
                 last_name VARCHAR(100) NOT NULL,
@@ -24,7 +24,7 @@ const pool = new Pool({
         `);
         // create offers table
         await pool.query(`
-            CREATE TABLE offers (
+            CREATE TABLE IF NOT EXISTS offers (
                 id SERIAL PRIMARY KEY,
                 user_id INTEGER REFERENCES users(id),
                 title VARCHAR(255) NOT NULL,
@@ -33,11 +33,35 @@ const pool = new Pool({
                 created_at TIMESTAMP DEFAULT NOW()
             );
         `);
+        // create messages table
+        await pool.query(`
+            CREATE TABLE IF NOT EXISTS messages (
+                id SERIAL PRIMARY KEY,
+                sender_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                receiver_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                offer_id INTEGER REFERENCES offers(id) ON DELETE SET NULL,
+                content TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT NOW(),
+                is_read BOOLEAN DEFAULT FALSE
+            );
+        `);
 
-        console.log('✅ Tables "users" and "offers" created !');
+        // create index for better performances
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_messages_receiver ON messages(receiver_id);
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+        `);
+        await pool.query(`
+            CREATE INDEX IF NOT EXISTS idx_messages_offer ON messages(offer_id);
+        `);
+
+        console.log('✅ Tables "users", "offers" and "messages" created !');
     } catch (err) {
-        console.error('❌ Error :', err);
+        console.error('❌ Error creating tables:', err);
     } finally {
         pool.end();
+        console.log('📶 Database connection closed');
     }
 })();
