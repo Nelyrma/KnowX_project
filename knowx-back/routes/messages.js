@@ -13,11 +13,14 @@ router.get('/', authenticateToken, async (req, res) => {
                 m.*,
                 u_sender.first_name as sender_first_name,
                 u_sender.last_name as sender_last_name,
+                u_receiver.first_name as receiver_first_name,
+                u_receiver.last_name as receiver_last_name,
                 o.title as offer_title
              FROM messages m
              LEFT JOIN users u_sender ON m.sender_id = u_sender.id
+             LEFT JOIN users u_receiver ON m.receiver_id = u_receiver.id
              LEFT JOIN offers o ON m.offer_id = o.id
-             WHERE m.receiver_id = $1
+             WHERE m.receiver_id = $1 OR m.sender_id = $1
              ORDER BY m.created_at DESC`,
             [userId]
         );
