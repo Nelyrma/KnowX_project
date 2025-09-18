@@ -10,7 +10,7 @@ import {
     CircularProgress,
     Alert
 } from '@mui/material';
-import { PersonAdd, ArrowBack } from '@mui/icons-material';
+import { PersonAdd } from '@mui/icons-material';
 
 function SignupForm() {
     const navigate = useNavigate();
@@ -47,6 +47,9 @@ function SignupForm() {
             const data = await res.json();
             if (res.ok) {
                 setMessage("✅ Account created successfully!");
+                if (data.token) {
+                    localStorage.setItem('token', data.token);
+                }
                 setTimeout(() => navigate("/home"), 1000);
             } else {
                 setMessage(data.error || "❌ Something went wrong");
@@ -61,18 +64,22 @@ function SignupForm() {
 
     return (
         <Container maxWidth="sm">
-            {/* Header */}
-            <Box sx={{ textAlign: 'center', mb: 2, mt: 4 }}>
-                <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+            {/* Header simplifié */}
+            <Box sx={{ textAlign: 'center', mb: 4, mt: 8 }}>
+                <Typography variant="h3" component="h1" gutterBottom sx={{ 
+                    fontWeight: 'bold', 
+                    color: 'primary.main',
+                    mb: 1
+                }}>
                     Join KnowX
                 </Typography>
-                <Typography variant="body1" color="text.secondary">
+                <Typography variant="h6" component="h2" color="text.secondary" sx={{ mb: 3 }}>
                     Create your account and start sharing skills
                 </Typography>
             </Box>
 
             {/* Formulaire */}
-            <Paper elevation={3} sx={{ p: 4 }}>
+            <Paper elevation={3} sx={{ p: 4, mb: 8 }}>
                 <form onSubmit={handleSubmit}>
                     <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
                         <TextField
@@ -126,9 +133,13 @@ function SignupForm() {
                         fullWidth
                         size="large"
                         startIcon={loading ? <CircularProgress size={20} /> : <PersonAdd />}
-                        sx={{ mt: 3, py: 1.5 }}
+                        sx={{ 
+                            mt: 3, 
+                            py: 1.5,
+                            fontSize: '1.1rem'
+                        }}
                     >
-                        {loading ? "Creating Account..." : "Sign Up"}
+                        {loading ? "Creating Account..." : "Create Account"}
                     </Button>
 
                     {message && (
@@ -139,7 +150,7 @@ function SignupForm() {
                 </form>
 
                 <Box sx={{ textAlign: 'center', mt: 3 }}>
-                    <Typography variant="body2" color="text.secondary">
+                    <Typography variant="body1" color="text.secondary">
                         Already have an account?{" "}
                         <Link 
                             to="/login" 
@@ -150,7 +161,7 @@ function SignupForm() {
                                 cursor: 'pointer'
                             }}
                         >
-                            Sign in
+                            Sign in here
                         </Link>
                     </Typography>
                 </Box>
