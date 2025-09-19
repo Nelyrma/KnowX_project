@@ -123,7 +123,7 @@ const Home = () => {
                             startIcon={<List />}
                             onClick={() => navigate('/my-offers')}
                         >
-                            My offers
+                            My requests
                         </Button>
 
                         {/* Profile */}

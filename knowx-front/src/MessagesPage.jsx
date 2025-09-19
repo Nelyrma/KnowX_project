@@ -11,13 +11,22 @@ import {
   ListItemText,
   Chip,
   Button,
-  Divider
+  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  IconButton
 } from '@mui/material';
-import { ArrowBack, MarkEmailRead } from '@mui/icons-material';
+import { ArrowBack, MarkEmailRead, Reply, Send, Close } from '@mui/icons-material';
 
 const MessagesPage = () => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [replyOpen, setReplyOpen] = useState(false);
+  const [currentMessage, setCurrentMessage] = useState(null);
+  const [replyContent, setReplyContent] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,12 +54,36 @@ const MessagesPage = () => {
       await axios.put(`http://localhost:3001/api/messages/${messageId}/read`, {}, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Met à jour localement l'état du message
       setMessages(messages.map(msg => 
         msg.id === messageId ? { ...msg, is_read: true } : msg
       ));
     } catch (err) {
       console.error('Error marking message as read:', err);
+    }
+  };
+
+  const handleReply = (message) => {
+    setCurrentMessage(message);
+    setReplyOpen(true);
+  };
+
+  const sendReply = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.post('http://localhost:3001/api/messages', {
+        receiver_id: currentMessage.sender_id,
+        offer_id: currentMessage.offer_id,
+        content: replyContent
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      alert('✅ Reply sent successfully!');
+      setReplyOpen(false);
+      setReplyContent('');
+      setCurrentMessage(null);
+    } catch (err) {
+      alert('❌ Error sending reply: ' + (err.response?.data?.error || err.message));
     }
   };
 
@@ -124,16 +157,25 @@ const MessagesPage = () => {
                       </Box>
                     }
                   />
-                  {!message.is_read && (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {!message.is_read && (
+                      <Button
+                        size="small"
+                        startIcon={<MarkEmailRead />}
+                        onClick={() => markAsRead(message.id)}
+                      >
+                        Mark as read
+                      </Button>
+                    )}
                     <Button
                       size="small"
-                      startIcon={<MarkEmailRead />}
-                      onClick={() => markAsRead(message.id)}
-                      sx={{ ml: 2 }}
+                      variant="outlined"
+                      startIcon={<Reply />}
+                      onClick={() => handleReply(message)}
                     >
-                      Mark as read
+                      Reply
                     </Button>
-                  )}
+                  </Box>
                 </ListItem>
                 {index < messages.length - 1 && <Divider />}
               </Box>
@@ -141,6 +183,43 @@ const MessagesPage = () => {
           </List>
         )}
       </Paper>
+
+      {/* Reply Dialog */}
+      <Dialog open={replyOpen} onClose={() => setReplyOpen(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          Reply to {currentMessage?.sender_first_name}
+          <IconButton onClick={() => setReplyOpen(false)} sx={{ position: 'absolute', right: 8, top: 8 }}>
+            <Close />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary" gutterBottom>
+            Regarding: {currentMessage?.offer_title}
+          </Typography>
+          <TextField
+            autoFocus
+            multiline
+            rows={4}
+            fullWidth
+            variant="outlined"
+            label="Your reply message"
+            value={replyContent}
+            onChange={(e) => setReplyContent(e.target.value)}
+            sx={{ mt: 2 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setReplyOpen(false)}>Cancel</Button>
+          <Button 
+            onClick={sendReply} 
+            variant="contained" 
+            startIcon={<Send />}
+            disabled={!replyContent.trim()}
+          >
+            Send Reply
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };

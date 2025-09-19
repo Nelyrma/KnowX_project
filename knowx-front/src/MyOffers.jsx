@@ -55,7 +55,7 @@ const MyOffers = () => {
 
     if (loading) return (
         <Container maxWidth="lg" sx={{ py: 8, textAlign: 'center' }}>
-            <Typography>Loading your offers...</Typography>
+            <Typography>Loading your requests...</Typography>
         </Container>
     );
 
@@ -73,7 +73,7 @@ const MyOffers = () => {
                 </Button>
                 
                 <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
-                    My Offers
+                    My Requests
                 </Typography>
                 
                 <Chip 
