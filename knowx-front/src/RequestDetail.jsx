@@ -13,7 +13,7 @@ import {
 import { ArrowBack } from '@mui/icons-material';
 import MessageForm from './MessageForm';
 
-const OfferDetail = () => {
+const RequestDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const [offer, setOffer] = useState(null);
@@ -27,8 +27,8 @@ const OfferDetail = () => {
                 setOffer(res.data);
                 setIsLoading(false);
             } catch (err) {
-                console.error('Error loading offer:', err);
-                alert('Cannot load offer details.');
+                console.error('Error loading request:', err);
+                alert('Cannot load request details.');
                 navigate('/home');
             }
         };
@@ -36,13 +36,13 @@ const OfferDetail = () => {
     }, [id, navigate]);
 
     if (isLoading) return <Typography>Loading...</Typography>;
-    if (!offer) return <Typography>Offer not found</Typography>;
+    if (!offer) return <Typography>Request not found</Typography>;
 
     return (
         <Container maxWidth="md" sx={{ py: 4 }}>
             {/* Bouton retour */}
             <Button startIcon={<ArrowBack />} onClick={() => navigate('/home')} sx={{ mb: 3 }}>
-                Back to offers
+                Back to requests
             </Button>
 
             {/* Carte de détail de l'offre */}
@@ -100,4 +100,4 @@ const OfferDetail = () => {
     );
 };
 
-export default OfferDetail;
+export default RequestDetail;

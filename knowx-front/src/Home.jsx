@@ -57,7 +57,7 @@ const Home = () => {
                 const otherUsersOffers = res.data.filter(offer => offer.user_id !== userId);
                 setOffers(otherUsersOffers);
             } catch (err) {
-                console.error('Error loading offers:', err);
+                console.error('Error loading requests:', err);
                 if (err.response?.status === 401) {
                     navigate("/login");
                 }
@@ -96,13 +96,13 @@ const Home = () => {
                         <Button 
                             color="inherit" 
                             startIcon={<Add />} 
-                            onClick={() => navigate('/create-offer')}
+                            onClick={() => navigate('/create-request')}
                             sx={{ 
                                 backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                 '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }
                             }}
                         >
-                            Create Offer
+                            Create Request
                         </Button>
 
                         {/* Séparateur visuel */}
@@ -117,11 +117,11 @@ const Home = () => {
                             Messages
                         </Button>
 
-                        {/* My offers */}
+                        {/* My requests */}
                         <Button
                             color="inherit"
                             startIcon={<List />}
-                            onClick={() => navigate('/my-offers')}
+                            onClick={() => navigate('/my-requests')}
                         >
                             My requests
                         </Button>

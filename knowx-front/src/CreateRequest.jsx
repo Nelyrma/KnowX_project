@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Add } from '@mui/icons-material';
 
-const CreateOffer = () => {
+const CreateRequest = () => {
     const [title, setTitle] = useState('');
     const [currentSkill, setCurrentSkill] = useState('');
     const [skills, setSkills] = useState([]);
@@ -42,7 +42,7 @@ const CreateOffer = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('✅ Offer created successfully!');
+            alert('✅ Request created successfully!');
             navigate('/home');
         } catch (err) {
             alert('❌ Error: ' + (err.response?.data?.error || err.message));
@@ -87,7 +87,7 @@ const CreateOffer = () => {
                         flexGrow: 1
                     }}
                 >
-                    Create New Offer
+                    Create New Help Request
                 </Typography>
             </Box>
 
@@ -157,7 +157,7 @@ const CreateOffer = () => {
                         sx={{ mt: 3 }}
                         startIcon={<Add />}
                     >
-                        Publish Offer
+                        Publish Request
                     </Button>
                 </form>
             </Paper>
@@ -165,4 +165,4 @@ const CreateOffer = () => {
     );
 };
 
-export default CreateOffer;
+export default CreateRequest;

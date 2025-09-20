@@ -6,12 +6,12 @@ import SignupForm from './SignupForm';
 import Login from './Login';
 import Profile from './Profile';
 import Home from './Home';
-import CreateOffer from './CreateOffer';
-import EditOffer from './EditOffer';
-import OfferDetail from './OfferDetail';
+import CreateRequest from './CreateRequest';
+import EditRequest from './EditRequest';
+import RequestDetail from './RequestDetail';
 import ProtectedRoute from './ProtectedRoute';
 import MessagesPage from './MessagesPage';
-import MyOffers from './MyOffers';
+import MyRequests from './MyRequests';
 
 
 function App() {
@@ -32,12 +32,12 @@ function App() {
                         }
                     />
                     <Route path="/profile" element={<Profile />} />
-                    <Route path="/create-offer" element={<CreateOffer />} />
+                    <Route path="/create-request" element={<CreateRequest />} />
                     <Route
-                        path="/edit-offer/:id"
+                        path="/edit-request/:id"
                         element={
                             <ProtectedRoute>
-                                <EditOffer />
+                                <EditRequest />
                             </ProtectedRoute>
                         }
                     />
@@ -45,7 +45,7 @@ function App() {
                         path="/offer/:id"
                         element={
                             <ProtectedRoute>
-                                <OfferDetail />
+                                <RequestDetail />
                             </ProtectedRoute>
                         }
                     />
@@ -58,10 +58,10 @@ function App() {
                         }
                     />
                     <Route
-                        path="/my-offers"
+                        path="/my-requests"
                         element={
                             <ProtectedRoute>
-                                <MyOffers />
+                                <MyRequests />
                             </ProtectedRoute>
                         }
                     />

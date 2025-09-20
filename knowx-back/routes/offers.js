@@ -52,8 +52,8 @@ router.delete('/:id', authenticateToken, async (req, res) => {
     }
 });
 
-// GET /api/offers/my-offers - Récupère les offres de l'utilisateur connecté
-router.get('/my-offers', authenticateToken, async (req, res) => {
+// GET /api/offers/my-requests - Récupère les demandes de l'utilisateur connecté
+router.get('/my-requests', authenticateToken, async (req, res) => {
     try {
         const userId = req.userId;
         const result = await pool.query(
@@ -67,7 +67,7 @@ router.get('/my-offers', authenticateToken, async (req, res) => {
     }
 });
 
-// GET /api/offers/:id - Récupérer une offre spécifique par son ID
+// GET /api/offers/:id - Récupérer une demande spécifique par son ID
 router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;

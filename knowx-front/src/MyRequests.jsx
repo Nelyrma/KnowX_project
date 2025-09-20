@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Edit, Delete } from '@mui/icons-material';
 
-const MyOffers = () => {
+const MyRequests = () => {
     const [offers, setOffers] = useState([]);
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
@@ -26,20 +26,20 @@ const MyOffers = () => {
     const fetchMyOffers = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:3001/api/offers/my-offers', {
+            const res = await axios.get('http://localhost:3001/api/offers/my-requests', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setOffers(res.data);
         } catch (err) {
-            console.error('Error loading offers:', err);
-            alert('Cannot load your offers');
+            console.error('Error loading requests:', err);
+            alert('Cannot load your requests');
         } finally {
             setLoading(false);
         }
     };
 
     const handleDeleteOffer = async (offerId) => {
-        if (!window.confirm('Are you sure you want to delete this offer?')) return;
+        if (!window.confirm('Are you sure you want to delete this request?')) return;
 
         try {
             const token = localStorage.getItem('token');
@@ -47,7 +47,7 @@ const MyOffers = () => {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setOffers(offers.filter(offer => offer.id !== offerId));
-            alert('✅ Offer deleted!');
+            alert('✅ Request deleted!');
         } catch (err) {
             alert('❌ Error: ' + (err.response?.data?.error || err.message));
         }
@@ -87,7 +87,7 @@ const MyOffers = () => {
                 </Typography>
             </Paper>
 
-            {/* Grille des offres - CENTRÉE */}
+            {/* Grille des demandes - CENTRÉE */}
             <Grid 
                 container 
                 spacing={4} 
@@ -98,17 +98,17 @@ const MyOffers = () => {
                     <Grid item xs={12}>
                         <Paper sx={{ p: 6, textAlign: 'center' }}>
                             <Typography variant="h5" gutterBottom color="text.secondary">
-                                📭 No offers yet
+                                No requests yet
                             </Typography>
                             <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                                You haven't created any offers yet.
+                                You haven't created any requests yet.
                             </Typography>
                             <Button 
                                 variant="contained" 
                                 startIcon={<Edit />}
-                                onClick={() => navigate('/create-offer')}
+                                onClick={() => navigate('/create-request')}
                             >
-                                Create Your First Offer
+                                Create Your First Request
                             </Button>
                         </Paper>
                     </Grid>
@@ -165,7 +165,7 @@ const MyOffers = () => {
                                         size="small"
                                         variant="contained"
                                         startIcon={<Edit />}
-                                        onClick={() => navigate(`/edit-offer/${offer.id}`)}
+                                        onClick={() => navigate(`/edit-request/${offer.id}`)}
                                     >
                                         Edit
                                     </Button>
@@ -188,4 +188,4 @@ const MyOffers = () => {
     );
 };
 
-export default MyOffers;
+export default MyRequests;

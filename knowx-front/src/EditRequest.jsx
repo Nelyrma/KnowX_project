@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import { ArrowBack, Save } from '@mui/icons-material';
 
-const EditOffer = () => {
+const EditRequest = () => {
     const { id } = useParams(); // Récupérer l'ID de l'offre depuis l'URL
     const navigate = useNavigate();
     const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +35,7 @@ const EditOffer = () => {
                 const res = await axios.get(`http://localhost:3001/api/offers/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log("✅ Offer data received:", res.data);
+                console.log("✅ Request data received:", res.data);
                 setOfferData(res.data);
                 setIsLoading(false);
             } catch (err) {
@@ -56,7 +56,7 @@ const EditOffer = () => {
             await axios.put(`http://localhost:3001/api/offers/${id}`, offerData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('✅ Offer successfully modified !');
+            alert('✅ Request successfully modified !');
             navigate('/home');
         } catch (err) {
             // Gestion d'erreur MODIFIÉE pour correspondre à ton backend
@@ -93,13 +93,13 @@ const EditOffer = () => {
                 <IconButton onClick={() => navigate('/home')} sx={{ mr: 2 }}>
                     <ArrowBack />
                 </IconButton>
-                <Typography variant="h4">Edit offer</Typography>
+                <Typography variant="h4">Edit request</Typography>
             </Box>
 
         <form onSubmit={handleSubmit}>
             <TextField
                 fullWidth
-                label="Title of the offer"
+                label="Title of the request"
                 name="title"
                 value={offerData.title}
                 onChange={handleChange}
@@ -160,4 +160,4 @@ const EditOffer = () => {
   );
 };
 
-export default EditOffer;
+export default EditRequest;
