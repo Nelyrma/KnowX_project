@@ -97,7 +97,7 @@ const CreateRequest = () => {
                     {/* Titre */}
                     <TextField
                         fullWidth
-                        label="Offer Title"
+                        label="Request Title"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         margin="normal"

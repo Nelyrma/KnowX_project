@@ -77,7 +77,7 @@ const Home = () => {
     );
 
     return (
-        <Container maxWidth="xl" sx={{ minHeight: '100vh', backgroundColor: 'background.default', p: 0 }}>
+        <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default', width: '100%' }}>
             {/* Header */}
             <AppBar position="static">
                 <Toolbar>
@@ -92,7 +92,7 @@ const Home = () => {
 
                     {/* Actions principales à droite */}
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {/* Bouton Create Offer */}
+                        {/* Bouton Create Request */}
                         <Button 
                             color="inherit" 
                             startIcon={<Add />} 
@@ -150,13 +150,16 @@ const Home = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* HERO SECTION & SEARCH BAR */}
+            {/* HERO SECTION & SEARCH BAR - MODIFIÉ */}
             <Box sx={{
                 textAlign: 'center',
                 py: 8,
                 background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
+                width: '100%',
+                mx: 0,
+                px: 2
             }}>
-                <Container maxWidth="md">
+                <Container maxWidth="md" sx={{ width: '100%' }}>
                     <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 3 }}>
                         Share Your Skills
                     </Typography>
@@ -169,7 +172,11 @@ const Home = () => {
                         variant="outlined"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        sx={{ maxWidth: 600, mx: 'auto' }}
+                        sx={{ 
+                            maxWidth: 600, 
+                            mx: 'auto',
+                            width: '100%'
+                        }}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
@@ -181,17 +188,22 @@ const Home = () => {
                 </Container>
             </Box>
 
-            {/* Offers grid - VERSION AMÉLIORÉE */}
-            <Container maxWidth="lg" sx={{ py: 6 }}>
+            {/* Requests grid - MODIFIÉ pour pleine largeur */}
+            <Box sx={{ 
+                width: '100%',
+                py: 6,
+                px: { xs: 2, sm: 3, md: 4 }
+            }}>
                 <Grid 
                     container 
                     spacing={3} 
                     justifyContent="center"
+                    sx={{ maxWidth: '1200px', mx: 'auto' }}
                 >
                     {filteredOffers.length === 0 ? (
                         <Grid item xs={12}>
                             <Typography variant="h6" textAlign="center" color="textSecondary">
-                                {searchTerm ? 'No matching offers found.' : 'No offers available yet.'}
+                                {searchTerm ? 'No matching requests found.' : 'No requests available yet.'}
                             </Typography>
                         </Grid>
                     ) : (
@@ -240,6 +252,9 @@ const Home = () => {
                                         }}>
                                             {offer.description}
                                         </Typography>
+                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
+                                            Posted by: {offer.user_name || 'Anonymous'}
+                                        </Typography>
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
                                         <Button
@@ -255,8 +270,8 @@ const Home = () => {
                         ))
                     )}
                 </Grid>
-            </Container>
-        </Container>
+            </Box>
+        </Box>
     );
 };
 
