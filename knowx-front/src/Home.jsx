@@ -252,9 +252,6 @@ const Home = () => {
                                         }}>
                                             {offer.description}
                                         </Typography>
-                                        <Typography variant="body2" color="textSecondary" sx={{ mt: 2 }}>
-                                            Posted by: {offer.user_name || 'Anonymous'}
-                                        </Typography>
                                     </CardContent>
                                     <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
                                         <Button
