@@ -89,30 +89,109 @@ router.post('/login', async (req, res) => {
 router.get('/profile', authenticateToken, async (req, res) => {
     try {
         const user = await pool.query(`SELECT first_name, last_name, email,
-            skills_offered, skills_wanted FROM users WHERE id = $1`, [req.userId]);
+            skills_offered, skills_wanted, notification_preferences, profile_picture,
+            created_at FROM users WHERE id = $1`,
+            [req.userId]);
         res.json(user.rows[0]);
     } catch (err) {
         res.status(500).json({ error: 'Server error' });
     }
 });
 
-// PATCH /profile
-//---------------
-router.patch('/profile', authenticateToken, async (req, res) => {
-    const { skills_offered, skills_wanted } = req.body;
+// PUT /profile - Mettre à jour le profil COMPLET
+// ----------------------------------------------
+router.put('/profile', authenticateToken, async (req, res) => {
+    const { first_name, last_name, email, phone_number, skills_offered, skills_wanted, notification_preferences } = req.body;
 
     try {
+        // Vérifier si l'email est déjà utilisé par un autre utilisateur
+        if (email) {
+            const emailCheck = await pool.query(
+                'SELECT id FROM users WHERE email = $1 AND id != $2',
+                [email, req.userId]
+            );
+            if (emailCheck.rows.length > 0) {
+                return res.status(400).json({ error: 'Email already in use' });
+            }
+        }
+
         const result = await pool.query(
             `UPDATE users
-            SET skills_offered = $1, skills_wanted = $2
-            WHERE id = $3
-            RETURNING first_name, last_name, skills_offered, skills_wanted`,
-            [skills_offered, skills_wanted, req.userId]
+             SET first_name = COALESCE($1, first_name),
+                 last_name = COALESCE($2, last_name),
+                 email = COALESCE($3, email),
+                 phone_number = COALESCE($4, phone_number),
+                 skills_offered = COALESCE($4, skills_offered),
+                 skills_wanted = COALESCE($5, skills_wanted),
+                 notification_preferences = COALESCE($6, notification_preferences)
+             WHERE id = $7
+             RETURNING id, first_name, last_name, email, phone_number, skills_offered, skills_wanted, notification_preferences`,
+            [first_name, last_name, email, phone_number, skills_offered, skills_wanted, notification_preferences, req.userId]
         );
-        res.json(result.rows[0]);
+
+        res.json({ 
+            message: 'Profile updated successfully', 
+            user: result.rows[0] 
+        });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: 'Server Error' });
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// PUT /change-password - Changer le mot de passe
+// ----------------------------------------------
+router.put('/change-password', authenticateToken, async (req, res) => {
+    const { currentPassword, newPassword } = req.body;
+
+    try {
+        // 1. Récupérer le mot de passe actuel
+        const user = await pool.query('SELECT password FROM users WHERE id = $1', [req.userId]);
+        
+        if (user.rows.length === 0) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // 2. Vérifier l'ancien mot de passe
+        const isValid = await bcrypt.compare(currentPassword, user.rows[0].password);
+        if (!isValid) {
+            return res.status(400).json({ error: 'Current password is incorrect' });
+        }
+
+        // 3. Hasher le nouveau mot de passe
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        
+        // 4. Mettre à jour
+        await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, req.userId]);
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// DELETE /account - Supprimer le compte (soft delete)
+// ---------------------------------------------------
+router.delete('/account', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.userId;
+        
+        // Soft delete: on garde les données mais on rend le compte inaccessible
+        await pool.query(
+            `UPDATE users 
+             SET email = NULL, 
+                 password = NULL,
+                 deleted = true,
+                 deleted_at = CURRENT_TIMESTAMP
+             WHERE id = $1`,
+            [userId]
+        );
+
+        res.json({ message: 'Account deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
