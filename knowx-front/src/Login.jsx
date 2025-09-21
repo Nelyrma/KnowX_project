@@ -11,6 +11,7 @@ import {
   Alert
 } from '@mui/material';
 import { Login as LoginIcon, ArrowBack } from '@mui/icons-material';
+import { DEMO_CREDENTIALS } from './demoData';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -28,8 +29,8 @@ const Login = () => {
             const res = await axios.post('http://localhost:3001/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);
             
-            // Message de bienvenue plus personnalisé
-            alert(`Welcome back! 🎉`);
+            // Message de bienvenue
+            alert(`Welcome back!`);
             navigate('/home');
         } catch (err) {
             setError(err.response?.data?.error || 'Connection error');
@@ -56,6 +57,20 @@ const Login = () => {
                 <Typography variant="body1" color="text.secondary">
                     Sign in to your KnowX account
                 </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+                <Button 
+                    size="small" 
+                    variant="outlined"
+                    onClick={() => {
+                        setEmail(DEMO_CREDENTIALS.login.email);
+                        setPassword(DEMO_CREDENTIALS.login.password);
+                    }}
+                    sx={{ mb: 2 }}
+                >
+                    Demo Login
+                </Button>
             </Box>
 
             {/* Formulaire */}

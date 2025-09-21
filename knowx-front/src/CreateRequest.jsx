@@ -12,6 +12,7 @@ import {
     Paper
 } from '@mui/material';
 import { ArrowBack, Add } from '@mui/icons-material';
+import { DEMO_CREDENTIALS } from './demoData';
 
 const CreateRequest = () => {
     const [title, setTitle] = useState('');
@@ -89,6 +90,21 @@ const CreateRequest = () => {
                 >
                     Create New Help Request
                 </Typography>
+            </Box>
+
+            <Box sx={{ textAlign: 'center', mb: 3 }}>
+                <Button 
+                    size="small" 
+                    variant="outlined"
+                    onClick={() => {
+                        setTitle(DEMO_CREDENTIALS.request.title);
+                        setSkills(DEMO_CREDENTIALS.request.skills_offered);
+                        setDescription(DEMO_CREDENTIALS.request.description);
+                    }}
+                    sx={{ mb: 2 }}
+                >
+                    Demo Request
+                </Button>
             </Box>
 
             {/* Formulaire dans une carte */}
