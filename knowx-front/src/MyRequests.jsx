@@ -77,13 +77,13 @@ const MyRequests = () => {
                 </Typography>
                 
                 <Chip 
-                    label={`${offers.length} offer${offers.length !== 1 ? 's' : ''}`} 
+                    label={`${offers.length} request${offers.length !== 1 ? 's' : ''}`} 
                     color="primary" 
                     sx={{ fontSize: '1.1rem', p: 2 }}
                 />
                 
                 <Typography variant="body1" color="text.secondary" sx={{ mt: 2 }}>
-                    Manage your skill offers and help requests
+                    Manage your help requests
                 </Typography>
             </Paper>
 

@@ -9,25 +9,116 @@ router.get('/', authenticateToken, async (req, res) => {
         const userId = req.userId;
         
         const result = await pool.query(
-            `SELECT 
+            `SELECT
+                DISTINCT ON (CASE WHEN m.sender_id = $1 THEN m.receiver_id ELSE m.sender_id END)
+                m.*,
+                u_sender.first_name as sender_first_name,
+                u_sender.last_name as sender_last_name,
+                u_receiver.first_name as receiver_first_name,
+                u_receiver.last_name as receiver_last_name,
+                o.title as offer_title,
+                COUNT(*) OVER (PARTITION BY CASE WHEN m.sender_id = $1 THEN m.receiver_id ELSE m.sender_id END) as message_count,
+                SUM(CASE WHEN m.is_read = false AND m.receiver_id = $1 THEN 1 ELSE 0 END) OVER (PARTITION BY CASE WHEN m.sender_id = $1 THEN m.receiver_id ELSE m.sender_id END) as unread_count
+             FROM messages m
+             LEFT JOIN users u_sender ON m.sender_id = u_sender.id
+             LEFT JOIN users u_receiver ON m.receiver_id = u_receiver.id
+             LEFT JOIN offers o ON m.offer_id = o.id
+             WHERE m.sender_id = $1 OR m.receiver_id = $1
+             ORDER BY CASE WHEN m.sender_id = $1 THEN m.receiver_id ELSE m.sender_id END, m.created_at DESC`,
+            [userId]
+        );
+        
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching conversations:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// AJOUTEZ cette route dans messages.js (après la route GET /)
+router.get('/conversations', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.userId;
+        
+        const result = await pool.query(`
+            SELECT DISTINCT ON (
+                CASE 
+                    WHEN m.sender_id = $1 THEN m.receiver_id 
+                    ELSE m.sender_id 
+                END
+            )
+            m.*,
+            u_sender.first_name as sender_first_name,
+            u_sender.last_name as sender_last_name,
+            u_receiver.first_name as receiver_first_name,
+            u_receiver.last_name as receiver_last_name,
+            o.title as offer_title,
+            COUNT(*) OVER (PARTITION BY 
+                CASE 
+                    WHEN m.sender_id = $1 THEN m.receiver_id 
+                    ELSE m.sender_id 
+                END
+            ) as message_count,
+            SUM(CASE WHEN m.is_read = false AND m.receiver_id = $1 THEN 1 ELSE 0 END) 
+                OVER (PARTITION BY 
+                    CASE 
+                        WHEN m.sender_id = $1 THEN m.receiver_id 
+                        ELSE m.sender_id 
+                    END
+                ) as unread_count
+            FROM messages m
+            LEFT JOIN users u_sender ON m.sender_id = u_sender.id
+            LEFT JOIN users u_receiver ON m.receiver_id = u_receiver.id
+            LEFT JOIN offers o ON m.offer_id = o.id
+            WHERE m.sender_id = $1 OR m.receiver_id = $1
+            ORDER BY 
+                CASE 
+                    WHEN m.sender_id = $1 THEN m.receiver_id 
+                    ELSE m.sender_id 
+                END, 
+                m.created_at DESC
+        `, [userId]);
+        
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Error fetching conversations:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// GET /api/messages/conversation/:userId - Récupère une conversation spécifique
+router.get('/conversation/:otherUserId', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const otherUserId = req.params.otherUserId;
+        
+        const result = await pool.query(`
+            SELECT 
                 m.*,
                 u_sender.first_name as sender_first_name,
                 u_sender.last_name as sender_last_name,
                 u_receiver.first_name as receiver_first_name,
                 u_receiver.last_name as receiver_last_name,
                 o.title as offer_title
-             FROM messages m
-             LEFT JOIN users u_sender ON m.sender_id = u_sender.id
-             LEFT JOIN users u_receiver ON m.receiver_id = u_receiver.id
-             LEFT JOIN offers o ON m.offer_id = o.id
-             WHERE m.receiver_id = $1 OR m.sender_id = $1
-             ORDER BY m.created_at DESC`,
-            [userId]
-        );
+            FROM messages m
+            LEFT JOIN users u_sender ON m.sender_id = u_sender.id
+            LEFT JOIN users u_receiver ON m.receiver_id = u_receiver.id
+            LEFT JOIN offers o ON m.offer_id = o.id
+            WHERE (m.sender_id = $1 AND m.receiver_id = $2)
+               OR (m.sender_id = $2 AND m.receiver_id = $1)
+            ORDER BY m.created_at ASC
+        `, [userId, otherUserId]);
+        
+        // Marquer les messages comme lus
+        await pool.query(`
+            UPDATE messages 
+            SET is_read = true 
+            WHERE receiver_id = $1 AND sender_id = $2 AND is_read = false
+        `, [userId, otherUserId]);
         
         res.json(result.rows);
     } catch (err) {
-        console.error('Error fetching messages:', err);
+        console.error('Error fetching conversation:', err);
         res.status(500).json({ error: 'Server error' });
     }
 });

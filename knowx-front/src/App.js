@@ -12,7 +12,8 @@ import RequestDetail from './RequestDetail';
 import ProtectedRoute from './ProtectedRoute';
 import MessagesPage from './MessagesPage';
 import MyRequests from './MyRequests';
-
+import ConversationsPage from './ConversationsPage';
+import ConversationDetailPage from './ConversationDetailPage';
 
 function App() {
     return (
@@ -49,14 +50,8 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route
-                        path="/messages"
-                        element={
-                            <ProtectedRoute>
-                                <MessagesPage />
-                            </ProtectedRoute>
-                        }
-                    />
+                    <Route path="/messages" element={<ConversationsPage />} />
+                    <Route path="/conversation/:userId" element={<ConversationDetailPage />} />
                     <Route
                         path="/my-requests"
                         element={
