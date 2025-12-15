@@ -28,9 +28,7 @@ const Login = () => {
         try {
             const res = await axios.post('http://localhost:3001/auth/login', { email, password });
             localStorage.setItem('token', res.data.token);
-            
-            // Message de bienvenue
-            alert(`Welcome back!`);
+
             navigate('/home');
         } catch (err) {
             setError(err.response?.data?.error || 'Connection error');

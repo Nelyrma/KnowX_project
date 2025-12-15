@@ -7,9 +7,9 @@ export const DEMO_CREDENTIALS = {
     
     // Pour l'inscription (email unique à chaque fois)
     signup: { 
-        first_name: 'Jean', 
-        last_name: 'Petit', 
-        email: `jean${Date.now()}@knowx.com`, // ← Unique grâce à timestamp
+        first_name: 'Clara', 
+        last_name: 'Clark', 
+        email: `clara${Date.now()}@knowx.com`, // ← Unique grâce à timestamp
         password: 'password123' 
     },
     
