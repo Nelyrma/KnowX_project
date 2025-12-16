@@ -35,33 +35,36 @@ function SignupForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        setMessage("");
 
         try {
             const res = await fetch("http://localhost:3001/auth/signup", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(formData),
             });
 
             const data = await res.json();
+
             if (res.ok) {
-                setMessage("✅ Account created successfully!");
+                // Sauvegarde le token si présent
                 if (data.token) {
                     localStorage.setItem('token', data.token);
+                } else {
+                    console.warn("No token received in signup response");
                 }
-                setTimeout(() => navigate("/home"), 1000);
+
+                navigate('/home');
             } else {
                 setMessage(data.error || "❌ Something went wrong");
             }
         } catch (err) {
-            console.error(err);
+            console.error("Signup error:", err);
             setMessage("❌ Server error");
         } finally {
             setLoading(false);
         }
-    };
+};
 
     return (
         <Container maxWidth="sm">

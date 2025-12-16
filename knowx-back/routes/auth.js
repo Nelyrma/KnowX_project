@@ -19,27 +19,51 @@ const pool = new Pool({
 router.post('/signup', async (req, res) => {
     const { first_name, last_name, email, password } = req.body;
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);  //hash the password
+    // Vérifier si tous les champs sont complétés
+    if (!first_name || !last_name || !email || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+    }
 
+    try {
+        // Vérifier qu'aucun utilisateur n'existe déjà avec cet email
+        const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+        if (existingUser.rows.length > 0) {
+            return res.status(400).json({ error: '❌ Email already in use' });
+        }
+
+        // Hasher le mot de passe
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Ajouter l'utilisateur
         const result = await pool.query(
             `INSERT INTO users (first_name, last_name, email, password, skills_offered, skills_wanted)
             VALUES($1, $2, $3, $4, $5, $6)
             RETURNING id, first_name, last_name, email`,
-            [first_name, last_name, email, hashedPassword, [], []] // empty skills by default
+            [first_name, last_name, email, hashedPassword, [], []]
+        );
+
+        const newUser = result.rows[0];
+
+        // Générer un token JWT
+        const token = jwt.sign(
+            { userId: newUser.id },
+            process.env.JWT_SECRET,
+            { expiresIn: '1h' }
         );
 
         res.status(201).json({
-            message: "✅ Account created!",
-            user: result.rows[0]
+            token,
+            user: {
+                id: newUser.id,
+                first_name: newUser.first_name,
+                last_name: newUser.last_name,
+                email: newUser.email
+            }
         });
+
     } catch (err) {
-        console.error(err);
-        if (err.code === '23505') {
-            res.status(400).json({ error: "❌ Email already in use" });
-        } else {
-            res.status(500).json({ error: "❌ Something went wrong" })
-        }
+        console.error('Signup error:', err);
+        res.status(500).json({ error: '❌ Account creation failed' });
     }
 });
 
