@@ -15,7 +15,8 @@ import {
     Grid,
     TextField,
     InputAdornment,
-    Chip
+    Chip,
+    Badge
 } from '@mui/material';
 import { Logout, Person, Add, Search, Email, List } from '@mui/icons-material';
 
@@ -23,6 +24,7 @@ const Home = () => {
     const [offers, setOffers] = useState([]);
     const [userId, setUserId] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
 
     // Vérification du token et récupération de l'user ID
@@ -68,6 +70,33 @@ const Home = () => {
         }
     }, [navigate, userId]);
 
+    // Vérifier les messages non lus toutes les 30 secondes
+    useEffect(() => {
+        if (!userId) return;
+
+        const fetchUnreadCount = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                const res = await axios.get('http://localhost:3001/api/messages/unread-count', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                setUnreadCount(res.data.count || 0);
+            } catch (err) {
+                console.warn('Could not fetch unread messages count:', err.message);
+                // Pas d'erreur bloquante — on ignore silencieusement
+            }
+        };
+
+        // Première vérif immédiate
+        fetchUnreadCount();
+
+        // Vérif toutes les 30 secondes
+        const interval = setInterval(fetchUnreadCount, 30_000); // 30 000 ms = 30s
+
+        // Nettoyage à la sortie
+        return () => clearInterval(interval);
+    }, [userId]);
+
     // Filtrage des offres basé sur la recherche
     const filteredOffers = offers.filter(offer =>
         offer.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -110,11 +139,43 @@ const Home = () => {
 
                         {/* Messages */}
                         <Button 
-                            color="inherit" 
-                            startIcon={<Email />} 
+                            color="inherit"
                             onClick={() => navigate('/messages')}
+                            sx={{
+                                minWidth: 'auto',
+                                px: 1.5,
+                                display: 'flex',
+                                alignItems: 'center'
+                            }}
                         >
-                            Messages
+                            <Email sx={{ fontSize: 24 }} />
+                            <Typography sx={{
+                                ml: 1, display: { xs: 'none', sm: 'inline' }
+                            }}>
+                                Messages
+                            </Typography>
+                            {unreadCount > 0 && (
+                                <Badge
+                                    badgeContent={unreadCount}
+                                    color="error"
+                                    max={99}
+                                    sx={{
+                                        '& .MuiBadge-badge': {
+                                            fontSize: '0.65rem',
+                                            height: 18,
+                                            minWidth: 18,
+                                            right: 0,
+                                            top: -10,
+                                            transform: 'translateX(0)',
+                                            position: 'relative',
+                                            marginLeft: '4px'
+                                        },
+                                        display: 'inline-flex'
+                                    }}
+                                >
+                                    <Box sx={{ width: 0, height: 0 }} /> {/* élément vide pour le Badge */}
+                                </Badge>
+                            )}
                         </Button>
 
                         {/* My requests */}

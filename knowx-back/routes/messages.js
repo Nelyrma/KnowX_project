@@ -35,7 +35,27 @@ router.get('/', authenticateToken, async (req, res) => {
     }
 });
 
-// AJOUTEZ cette route dans messages.js (après la route GET /)
+// GET /api/messages/unread-count - Compte les messages non lus
+router.get('/unread-count', authenticateToken, async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const result = await pool.query(
+            `SELECT COUNT(*) as count 
+             FROM messages 
+             WHERE receiver_id = $1 AND is_read = false`,
+            [userId]
+        );
+
+        const count = parseInt(result.rows[0].count, 10) || 0;
+        res.json({ count });
+    } catch (err) {
+        console.error('Error fetching unread message count:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// GET /api/messages/ conversations - Récupérer les conversations
 router.get('/conversations', authenticateToken, async (req, res) => {
     try {
         const userId = req.userId;

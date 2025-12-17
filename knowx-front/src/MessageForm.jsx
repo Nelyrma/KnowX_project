@@ -32,7 +32,6 @@ const MessageForm = ({ offerId, receiverId, receiverName, open, onClose }) => {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            alert('✅ Message sent successfully!');
             setContent('');
             onClose();
         } catch (err) {

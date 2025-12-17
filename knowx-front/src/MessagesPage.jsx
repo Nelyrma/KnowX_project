@@ -78,7 +78,6 @@ const MessagesPage = () => {
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      alert('✅ Reply sent successfully!');
       setReplyOpen(false);
       setReplyContent('');
       setCurrentMessage(null);
