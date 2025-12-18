@@ -16,7 +16,13 @@ import {
     TextField,
     InputAdornment,
     Chip,
-    Badge
+    Badge,
+    FormControlLabel,
+    Checkbox,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl
 } from '@mui/material';
 import { Logout, Person, Add, Search, Email, List } from '@mui/icons-material';
 
@@ -24,6 +30,8 @@ const Home = () => {
     const [offers, setOffers] = useState([]);
     const [userId, setUserId] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
+    const [hideResolved, setHideResolved] = useState(true); // par défaut masquer les "resolved"
+    const [sortBy, setSortBy] = useState('newest'); // 'newest' | 'oldest'
     const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
 
@@ -103,13 +111,28 @@ const Home = () => {
         return () => clearInterval(interval);
     }, [userId]);
 
-    // Filtrage des offres basé sur la recherche
-    const filteredOffers = offers.filter(offer =>
-        offer.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        offer.skills_offered?.some(skill =>
-            skill.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
+    // Filtrage + tri
+    const filteredOffers = offers
+        .filter(offer => {
+            // 1. Recherche
+            const matchesSearch = 
+                offer.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                offer.skills_offered?.some(skill => 
+                    skill.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+
+            // 2. Filtre "Hide resolved"
+            const isResolved = offer.status === 'resolved';
+            const showResolved = !hideResolved;
+
+            return matchesSearch && (showResolved || !isResolved);
+        })
+        .sort((a, b) => {
+            // 3. Tri par date
+            const dateA = new Date(a.created_at).getTime();
+            const dateB = new Date(b.created_at).getTime();
+            return sortBy === 'newest' ? dateB - dateA : dateA - dateB;
+        });
 
     return (
         <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default', width: '100%' }}>
@@ -217,22 +240,23 @@ const Home = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* HERO SECTION & SEARCH BAR */}
+            {/* HERO & SEARCH + FILTERS */}
             <Box sx={{
-                textAlign: 'center',
-                py: 8,
+                py: 6,
                 background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
                 width: '100%',
                 mx: 0,
                 px: 2
             }}>
                 <Container maxWidth="md" sx={{ width: '100%' }}>
-                    <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 3 }}>
+                    <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 2 }}>
                         Share Your Skills
                     </Typography>
                     <Typography variant="h5" component="h2" gutterBottom sx={{ color: 'text.secondary', mb: 4 }}>
                         Find help or offer your expertise
                     </Typography>
+
+                    {/* Search bar */}
                     <TextField
                         fullWidth
                         placeholder="Search for Python, React, Design..."
@@ -242,6 +266,7 @@ const Home = () => {
                         sx={{ 
                             maxWidth: 600, 
                             mx: 'auto',
+                            mb: 3,
                             width: '100%'
                         }}
                         InputProps={{
@@ -252,9 +277,47 @@ const Home = () => {
                             ),
                         }}
                     />
+
+                    {/* Filtres */}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        flexWrap: 'wrap', 
+                        gap: 2, 
+                        justifyContent: 'center',
+                        maxWidth: 600,
+                        mx: 'auto'
+                    }}>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={hideResolved}
+                                    onChange={(e) => setHideResolved(e.target.checked)}
+                                    color="primary"
+                                    size="small"
+                                />
+                            }
+                            label="Hide resolved"
+                            sx={{ 
+                                mx: 0,
+                                '& .MuiFormControlLabel-label': { fontSize: '0.875rem' }
+                            }}
+                        />
+
+                        <FormControl size="small" sx={{ minWidth: 160 }}>
+                            <InputLabel sx={{ fontSize: '0.875rem' }}>Sort by</InputLabel>
+                            <Select
+                                value={sortBy}
+                                onChange={(e) => setSortBy(e.target.value)}
+                                label="Sort by"
+                                sx={{ fontSize: '0.875rem' }}
+                            >
+                                <MenuItem value="newest" sx={{ fontSize: '0.875rem' }}>Newest first</MenuItem>
+                                <MenuItem value="oldest" sx={{ fontSize: '0.875rem' }}>Oldest first</MenuItem>
+                            </Select>
+                        </FormControl>
+                    </Box>
                 </Container>
             </Box>
-
             {/* Requests grid - pleine largeur */}
             <Box sx={{ 
                 width: '100%',
