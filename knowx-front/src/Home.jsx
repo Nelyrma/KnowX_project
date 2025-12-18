@@ -83,7 +83,6 @@ const Home = () => {
                 setUnreadCount(res.data.count || 0);
             } catch (err) {
                 console.warn('Could not fetch unread messages count:', err.message);
-                // Pas d'erreur bloquante — on ignore silencieusement
             }
         };
 
@@ -211,7 +210,7 @@ const Home = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* HERO SECTION & SEARCH BAR - MODIFIÉ */}
+            {/* HERO SECTION & SEARCH BAR */}
             <Box sx={{
                 textAlign: 'center',
                 py: 8,
@@ -249,7 +248,7 @@ const Home = () => {
                 </Container>
             </Box>
 
-            {/* Requests grid - MODIFIÉ pour pleine largeur */}
+            {/* Requests grid - pleine largeur */}
             <Box sx={{ 
                 width: '100%',
                 py: 6,
@@ -282,45 +281,156 @@ const Home = () => {
                                     sx={{ 
                                         height: '100%', 
                                         display: 'flex', 
-                                        flexDirection: 'column', 
-                                        transition: '0.2s', 
+                                        flexDirection: 'column',
+                                        transition: '0.2s',
                                         '&:hover': { 
                                             transform: 'translateY(-4px)', 
-                                            boxShadow: 6 
+                                            boxShadow: 6,
+                                            borderColor: 'primary.main'
                                         },
                                         width: '100%',
-                                        maxWidth: 320
+                                        maxWidth: 340,
+                                        border: '1px solid',
+                                        borderColor: 
+                                            offer.status === 'pending' ? 'grey.300' :
+                                            offer.status === 'in progress' ? 'warning.main' :
+                                            'success.main'
                                     }}
                                 >
-                                    <CardContent sx={{ flexGrow: 1 }}>
-                                        <Chip
-                                            label={`Need help with ${offer.skills_offered?.[0] || 'Unknown'}`}
-                                            color="primary"
-                                            variant="filled"
-                                            sx={{ mb: 2, fontWeight: 'bold' }}
-                                        />
-                                        <Typography variant="h6" gutterBottom sx={{ minHeight: '64px' }}>
+                                    <CardContent sx={{ 
+                                        flexGrow: 1, 
+                                        pb: 0,
+                                        '&:last-child': { pb: 0 }
+                                    }}>
+                                        {/* Badges alignés */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            gap: 1, 
+                                            mb: 1.5, 
+                                            flexWrap: 'wrap'
+                                        }}>
+                                            <Chip
+                                                label={offer.skills_offered?.[0] || 'Skill?'}
+                                                size="small"
+                                                sx={{ 
+                                                    fontWeight: 600,
+                                                    bgcolor: 'primary.main',
+                                                    color: 'white',
+                                                    height: 24
+                                                }}
+                                            />
+                                            <Chip
+                                                label={
+                                                    offer.status === 'pending' ? 'Pending' :
+                                                    offer.status === 'in progress' ? 'In progress' :
+                                                    'Resolved'
+                                                }
+                                                size="small"
+                                                color={
+                                                    offer.status === 'pending' ? 'default' :
+                                                    offer.status === 'in progress' ? 'warning' :
+                                                    'success'
+                                                }
+                                                sx={{ 
+                                                    fontWeight: 600,
+                                                    height: 24
+                                                }}
+                                            />
+                                        </Box>
+
+                                        {/* Titre principal */}
+                                        <Typography 
+                                            variant="h6" 
+                                            gutterBottom 
+                                            sx={{ 
+                                                fontWeight: 'bold',
+                                                minHeight: '56px',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 2,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                mb: 1.5
+                                            }}
+                                        >
                                             {offer.title}
                                         </Typography>
-                                        <Typography variant="body2" sx={{ 
-                                            mt: 1, 
-                                            color: 'text.secondary', 
-                                            minHeight: '80px',
-                                            display: '-webkit-box',
-                                            WebkitLineClamp: 3,
-                                            WebkitBoxOrient: 'vertical',
-                                            overflow: 'hidden'
-                                        }}>
-                                            {offer.description}
+
+                                        {/* Description */}
+                                        <Typography 
+                                            variant="body2" 
+                                            color="text.secondary"
+                                            sx={{ 
+                                                minHeight: '60px',
+                                                display: '-webkit-box',
+                                                WebkitLineClamp: 3,
+                                                WebkitBoxOrient: 'vertical',
+                                                overflow: 'hidden',
+                                                mb: 2,
+                                                fontSize: '0.9rem'
+                                            }}
+                                        >
+                                            {offer.description || 'No description provided.'}
                                         </Typography>
+
+                                        {/* Barre de progression visuelle */}
+                                        <Box sx={{ 
+                                            display: 'flex', 
+                                            alignItems: 'center', 
+                                            gap: 0.5,
+                                            mb: 2
+                                        }}>
+                                            {[1, 2, 3].map((step) => (
+                                                <Box
+                                                    key={step}
+                                                    sx={{
+                                                        width: 6,
+                                                        height: 6,
+                                                        borderRadius: '50%',
+                                                        bgcolor: 
+                                                            step === 1 ? 'primary.main' :
+                                                            step === 2 && offer.status !== 'pending' ? 'primary.main' :
+                                                            step === 3 && offer.status === 'resolved' ? 'primary.main' :
+                                                            'grey.400'
+                                                    }}
+                                                />
+                                            ))}
+                                            <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
+                                                {offer.status === 'pending' ? 'New request' :
+                                                offer.status === 'in progress' ? 'Help in progress' :
+                                                'Completed ✅'}
+                                            </Typography>
+                                        </Box>
                                     </CardContent>
-                                    <CardActions sx={{ justifyContent: 'space-between', padding: 2 }}>
+
+                                    {/* Bouton amélioré */}
+                                    <CardActions sx={{ 
+                                        justifyContent: 'center', 
+                                        p: 2,
+                                        pt: 0 
+                                    }}>
                                         <Button
                                             size="small"
-                                            variant="outlined"
+                                            variant="contained"
+                                            color={
+                                                offer.status === 'pending' ? 'primary' :
+                                                offer.status === 'in progress' ? 'warning' :
+                                                'success'
+                                            }
                                             onClick={() => navigate(`/offer/${offer.id}`)}
+                                            sx={{ 
+                                                fontWeight: 'bold',
+                                                textTransform: 'none',
+                                                px: 3,
+                                                width: '100%',
+                                                boxShadow: 'none',
+                                                '&:hover': {
+                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
+                                                }
+                                            }}
                                         >
-                                            VIEW
+                                            {offer.status === 'pending' ? 'View & Help' :
+                                            offer.status === 'in progress' ? 'Continue Helping' :
+                                            'See Details'}
                                         </Button>
                                     </CardActions>
                                 </Card>
