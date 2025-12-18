@@ -135,4 +135,43 @@ router.put('/:id', authenticateToken, async (req, res) => {
     }
 });
 
+// PATCH /api/offers/:id/status - Mettre à jour le statut d'une offre
+router.patch('/:id/status', authenticateToken, async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    const userId = req.userId;
+
+    const validStatuses = ['pending', 'in progress', 'resolved'];
+    if (!validStatuses.includes(status)) {
+        return res.status(400).json({ error: 'Invalid status' });
+    }
+
+    try {
+        // Vérifier que l'offre existe et appartient à l'utilisateur
+        const offerCheck = await pool.query(
+            `SELECT user_id FROM offers WHERE id = $1`,
+            [id]
+        );
+
+        if (offerCheck.rows.length === 0) {
+            return res.status(404).json({ error: 'Offer not found' });
+        }
+
+        if (offerCheck.rows[0].user_id !== userId) {
+            return res.status(403).json({ error: 'Not authorized' });
+        }
+
+        // Mettre à jour le statut
+        const result = await pool.query(
+            `UPDATE offers SET status = $1 WHERE id = $2 RETURNING *`,
+            [status, id]
+        );
+
+        res.json({ message: 'Status updated', offer: result.rows[0] });
+    } catch (err) {
+        console.error('Status update error:', err);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
 module.exports = router;
