@@ -77,7 +77,7 @@ const RequestDetail = () => {
                     </Typography>
                 </Box>
 
-                {/* BOUTON CONTACT MODIFIÉ */}
+                {/* BOUTON CONTACT */}
                 <Button 
                     variant="contained" 
                     size="large" 
@@ -88,7 +88,7 @@ const RequestDetail = () => {
                 </Button>
             </Paper>
 
-            {/* FORMULAIRE DE MESSAGE - AJOUTÉ */}
+            {/* FORMULAIRE DE MESSAGE */}
             <MessageForm
                 offerId={offer.id}
                 receiverId={offer.user_id}

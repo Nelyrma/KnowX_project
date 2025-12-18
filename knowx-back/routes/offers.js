@@ -143,7 +143,7 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
 
     const validStatuses = ['pending', 'in progress', 'resolved'];
     if (!validStatuses.includes(status)) {
-        return res.status(400).json({ error: 'Invalid status' });
+        return res.status(400).json({ error: `Invalid status. Must be: ${validStatuses.join(', ')}` });
     }
 
     try {
@@ -158,7 +158,7 @@ router.patch('/:id/status', authenticateToken, async (req, res) => {
         }
 
         if (offerCheck.rows[0].user_id !== userId) {
-            return res.status(403).json({ error: 'Not authorized' });
+            return res.status(403).json({ error: 'Only the owner can update the status' });
         }
 
         // Mettre à jour le statut

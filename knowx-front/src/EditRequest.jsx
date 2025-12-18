@@ -35,7 +35,6 @@ const EditRequest = () => {
                 const res = await axios.get(`http://localhost:3001/api/offers/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-                console.log("✅ Request data received:", res.data);
                 setOfferData(res.data);
                 setIsLoading(false);
             } catch (err) {
@@ -52,14 +51,13 @@ const EditRequest = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            // URL et envoi des données MODIFIÉS pour l'API
+            // URL et envoi des données pour l'API
             await axios.put(`http://localhost:3001/api/offers/${id}`, offerData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            alert('✅ Request successfully modified !');
             navigate('/home');
         } catch (err) {
-            // Gestion d'erreur MODIFIÉE pour correspondre à ton backend
+            // Gestion d'erreur
             alert('❌ Error: ' + (err.response?.data?.error || err.message));
         }
     };

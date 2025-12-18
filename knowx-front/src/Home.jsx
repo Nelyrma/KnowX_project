@@ -56,7 +56,14 @@ const Home = () => {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 // Filtrer pour exclure les offres de l'utilisateur connecté
-                const otherUsersOffers = res.data.filter(offer => offer.user_id !== userId);
+                const otherUsersOffers = res.data
+                    .filter(offer => Number(offer.user_id) !== userId)
+                    .map(offer => ({
+                        ...offer,
+                        id: Number(offer.id),
+                        user_id: Number(offer.user_id),
+                        status: (offer.status || 'pending').trim().toLowerCase()
+                    }));
                 setOffers(otherUsersOffers);
             } catch (err) {
                 console.error('Error loading requests:', err);
@@ -372,42 +379,11 @@ const Home = () => {
                                             {offer.description || 'No description provided.'}
                                         </Typography>
 
-                                        {/* Barre de progression visuelle */}
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            alignItems: 'center', 
-                                            gap: 0.5,
-                                            mb: 2
-                                        }}>
-                                            {[1, 2, 3].map((step) => (
-                                                <Box
-                                                    key={step}
-                                                    sx={{
-                                                        width: 6,
-                                                        height: 6,
-                                                        borderRadius: '50%',
-                                                        bgcolor: 
-                                                            step === 1 ? 'primary.main' :
-                                                            step === 2 && offer.status !== 'pending' ? 'primary.main' :
-                                                            step === 3 && offer.status === 'resolved' ? 'primary.main' :
-                                                            'grey.400'
-                                                    }}
-                                                />
-                                            ))}
-                                            <Typography variant="caption" color="text.secondary" sx={{ ml: 1 }}>
-                                                {offer.status === 'pending' ? 'New request' :
-                                                offer.status === 'in progress' ? 'Help in progress' :
-                                                'Completed ✅'}
-                                            </Typography>
-                                        </Box>
+                                        {/* Boutons : uniquement pour le propriétaire */}
+
                                     </CardContent>
 
-                                    {/* Bouton amélioré */}
-                                    <CardActions sx={{ 
-                                        justifyContent: 'center', 
-                                        p: 2,
-                                        pt: 0 
-                                    }}>
+                                    <CardActions sx={{ justifyContent: 'center', p: 2, pt: 0 }}>
                                         <Button
                                             size="small"
                                             variant="contained"
@@ -422,15 +398,12 @@ const Home = () => {
                                                 textTransform: 'none',
                                                 px: 3,
                                                 width: '100%',
-                                                boxShadow: 'none',
-                                                '&:hover': {
-                                                    boxShadow: '0 2px 8px rgba(0,0,0,0.15)'
-                                                }
+                                                boxShadow: 'none'
                                             }}
                                         >
-                                            {offer.status === 'pending' ? 'View & Help' :
-                                            offer.status === 'in progress' ? 'Continue Helping' :
-                                            'See Details'}
+                                            {offer.status === 'pending' ? 'View request' :
+                                            offer.status === 'in progress' ? 'Continue' :
+                                            'Details'}
                                         </Button>
                                     </CardActions>
                                 </Card>
