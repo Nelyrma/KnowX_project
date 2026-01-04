@@ -32,8 +32,61 @@ const LandingPage = () => {
         flexDirection: 'column',
       }}
     >
-      {/* Hero */}
+      {/* Top-right auth links */}
       <Box
+        sx={{
+          position: 'absolute',
+          top: 24,
+          right: 24,
+          display: 'flex',
+          gap: 2,
+          alignItems: 'center',
+        }}
+      >
+        {/* Log in — text link */}
+        <Typography
+          component="a"
+          href="/login"
+          sx={{
+            color: '#555',
+            textDecoration: 'none',
+            fontWeight: 500,
+            fontSize: '0.95rem',
+            '&:hover': {
+              color: theme.palette.primary.main,
+              textDecoration: 'underline',
+            },
+          }}
+        >
+          Log in
+        </Typography>
+
+        {/* Sign up — subtle button */}
+        <Button
+          href="/signup"
+          variant="outlined"
+          size="small"
+          sx={{
+            borderColor: theme.palette.primary.light,
+            color: theme.palette.primary.main,
+            textTransform: 'none',
+            fontWeight: 500,
+            fontSize: '0.9rem',
+            px: 1.8,
+            py: 0.5,
+            borderRadius: '6px',
+            '&:hover': {
+              borderColor: theme.palette.primary.main,
+              backgroundColor: theme.palette.primary.light,
+            },
+          }}
+        >
+          Sign up
+        </Button>
+      </Box>
+
+    {/* Hero */}
+    <Box
         sx={{
           py: { xs: 6, md: 10 },
           textAlign: 'center',
