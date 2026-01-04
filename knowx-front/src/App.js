@@ -1,7 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import theme from './theme';
+import LandingPage from './LandingPage';
 import SignupForm from './SignupForm';
 import Login from './Login';
 import Profile from './Profile';
@@ -10,7 +11,6 @@ import CreateRequest from './CreateRequest';
 import EditRequest from './EditRequest';
 import RequestDetail from './RequestDetail';
 import ProtectedRoute from './ProtectedRoute';
-import MessagesPage from './MessagesPage';
 import MyRequests from './MyRequests';
 import ConversationsPage from './ConversationsPage';
 import ConversationDetailPage from './ConversationDetailPage';
@@ -21,9 +21,14 @@ function App() {
             <CssBaseline />
             <Router>
                 <Routes>
-                    <Route path="/" element={<Navigate to="/signup" replace />} />
+                    {/* Landing page à la racine */}
+                    <Route path="/" element={<LandingPage />} />
+                    
+                    {/* Pages d'authentification */}
                     <Route path="/signup" element={<SignupForm />} />
                     <Route path="/login" element={<Login />} />
+
+                    {/* Pages protégées */}
                     <Route
                         path="/home"
                         element={

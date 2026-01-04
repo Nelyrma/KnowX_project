@@ -18,14 +18,14 @@ const theme = createTheme({
   	typography: {
     	h3: {
       		fontWeight: 'bold',
-      		color: '#333333', // Gris foncé pour un bon contraste sur le fond clair
+      		color: '#333333', // Gris foncé
     	},
   	},
   	components: {
     	MuiAppBar: {
       		styleOverrides: {
         		root: {
-          			backgroundColor: '#ff9bb3', // On utilise la couleur primary.main pour l'AppBar
+          			backgroundColor: '#ff9bb3', // couleur primary.main pour l'AppBar
           			color: '#ffffff', // Texte en blanc sur l'AppBar
         		},
       		},
@@ -33,8 +33,8 @@ const theme = createTheme({
     	MuiChip: {
       		styleOverrides: {
         		root: {
-          			backgroundColor: '#ffcdda', // On utilise primary.light pour le fond du Chip
-          			color: '#333333', // Texte en gris foncé pour être lisible
+          			backgroundColor: '#ffcdda', // primary.light pour le fond du Chip
+          			color: '#333333', // Texte en gris foncé
           			fontWeight: 'bold',
         		},
       		},
