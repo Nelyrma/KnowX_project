@@ -17,8 +17,6 @@ import {
     InputAdornment,
     Chip,
     Badge,
-    FormControlLabel,
-    Checkbox,
     Select,
     MenuItem,
     InputLabel,
@@ -30,7 +28,7 @@ const Home = () => {
     const [offers, setOffers] = useState([]);
     const [userId, setUserId] = useState(null);
     const [searchTerm, setSearchTerm] = useState("");
-    const [hideResolved, setHideResolved] = useState(true); // par défaut masquer les "resolved"
+    const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'pending' | 'in progress' | 'resolved'
     const [sortBy, setSortBy] = useState('newest'); // 'newest' | 'oldest'
     const [unreadCount, setUnreadCount] = useState(0);
     const navigate = useNavigate();
@@ -121,11 +119,11 @@ const Home = () => {
                     skill.toLowerCase().includes(searchTerm.toLowerCase())
                 );
 
-            // 2. Filtre "Hide resolved"
-            const isResolved = offer.status === 'resolved';
-            const showResolved = !hideResolved;
+            // 2. Filtre par statut
+            const matchesStatus = 
+                statusFilter === 'all' || offer.status === statusFilter;
 
-            return matchesSearch && (showResolved || !isResolved);
+            return matchesSearch && matchesStatus;
         })
         .sort((a, b) => {
             // 3. Tri par date
@@ -287,21 +285,20 @@ const Home = () => {
                         maxWidth: 600,
                         mx: 'auto'
                     }}>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={hideResolved}
-                                    onChange={(e) => setHideResolved(e.target.checked)}
-                                    color="primary"
-                                    size="small"
-                                />
-                            }
-                            label="Hide resolved"
-                            sx={{ 
-                                mx: 0,
-                                '& .MuiFormControlLabel-label': { fontSize: '0.875rem' }
-                            }}
-                        />
+                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                            <InputLabel sx={{ fontSize: '0.875rem' }}>Status</InputLabel>
+                            <Select
+                                value={statusFilter}
+                                onChange={(e) => setStatusFilter(e.target.value)}
+                                label="Status"
+                                sx={{ fontSize: '0.875rem' }}
+                            >
+                                <MenuItem value="all" sx={{ fontSize: '0.875rem' }}>All</MenuItem>
+                                <MenuItem value="pending" sx={{ fontSize: '0.875rem' }}>Pending</MenuItem>
+                                <MenuItem value="in progress" sx={{ fontSize: '0.875rem' }}>In progress</MenuItem>
+                                <MenuItem value="resolved" sx={{ fontSize: '0.875rem' }}>Resolved</MenuItem>
+                            </Select>
+                        </FormControl>
 
                         <FormControl size="small" sx={{ minWidth: 160 }}>
                             <InputLabel sx={{ fontSize: '0.875rem' }}>Sort by</InputLabel>
