@@ -10,8 +10,7 @@ import {
   Box,
   Alert
 } from '@mui/material';
-import { Login as LoginIcon, ArrowBack } from '@mui/icons-material';
-import { DEMO_CREDENTIALS } from './demoData';
+import { Login as LoginIcon } from '@mui/icons-material';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -41,34 +40,12 @@ const Login = () => {
         <Container maxWidth="sm">
             {/* Header */}
             <Box sx={{ textAlign: 'center', mb: 2, mt: 4 }}>
-                <Button 
-                    startIcon={<ArrowBack />} 
-                    onClick={() => navigate('/')}
-                    sx={{ mb: 2 }}
-                    color="primary"
-                >
-                    Back
-                </Button>
                 <Typography variant="h3" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                     Welcome Back
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
                     Sign in to your KnowX account
                 </Typography>
-            </Box>
-
-            <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Button 
-                    size="small" 
-                    variant="outlined"
-                    onClick={() => {
-                        setEmail(DEMO_CREDENTIALS.login.email);
-                        setPassword(DEMO_CREDENTIALS.login.password);
-                    }}
-                    sx={{ mb: 2 }}
-                >
-                    Demo Login
-                </Button>
             </Box>
 
             {/* Formulaire */}

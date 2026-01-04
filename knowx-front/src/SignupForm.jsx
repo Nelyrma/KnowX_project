@@ -11,7 +11,6 @@ import {
     Alert
 } from '@mui/material';
 import { PersonAdd } from '@mui/icons-material';
-import { DEMO_CREDENTIALS } from './demoData';
 
 function SignupForm() {
     const navigate = useNavigate();
@@ -80,17 +79,6 @@ function SignupForm() {
                 <Typography variant="h6" component="h2" color="text.secondary" sx={{ mb: 3 }}>
                     Create your account and start sharing skills
                 </Typography>
-            </Box>
-
-            <Box sx={{ textAlign: 'center', mb: 3 }}>
-                <Button 
-                    size="small" 
-                    variant="outlined"
-                    onClick={() => setFormData(DEMO_CREDENTIALS.signup)}
-                    sx={{ mb: 2 }}
-                >
-                    Demo Signup
-                </Button>
             </Box>
 
             {/* Formulaire */}
