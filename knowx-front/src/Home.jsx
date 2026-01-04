@@ -243,10 +243,11 @@ const Home = () => {
                 py: 6,
                 background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
                 width: '100%',
-                mx: 0,
-                px: 2
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
             }}>
-                <Container maxWidth="md" sx={{ width: '100%' }}>
+                <Container maxWidth="md">
                     <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 2 }}>
                         Share Your Skills
                     </Typography>

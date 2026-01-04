@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from 'react-router-dom';
 import {
     Container,
@@ -23,6 +23,7 @@ function SignupForm() {
 
     const [message, setMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [passwordError, setPasswordError] = useState('');
 
     const handleChange = (e) => {
         setFormData({
@@ -31,10 +32,31 @@ function SignupForm() {
         });
     };
 
+    const validatePasswordField = (pwd) => {
+        if (!pwd) return '';
+        const errors = [];
+        if (pwd.length < 12) errors.push('12+ characters');
+        if (!/\d/.test(pwd)) errors.push('1 digit');
+        if (!/[a-z]/.test(pwd)) errors.push('1 lowercase');
+        if (!/[A-Z]/.test(pwd)) errors.push('1 uppercase');
+        if (!/[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(pwd)) errors.push('1 symbol');
+        return errors.length ? `${errors.join(', ')}` : '';
+    };
+
+    useEffect(() => {
+        setPasswordError(validatePasswordField(formData.password));
+    }, [formData.password]);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
+
+        if (passwordError) {
+            setMessage("Password does not meet requirements");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await fetch("http://localhost:3001/auth/signup", {
@@ -46,28 +68,27 @@ function SignupForm() {
             const data = await res.json();
 
             if (res.ok) {
-                // Sauvegarde le token si présent
                 if (data.token) {
                     localStorage.setItem('token', data.token);
-                } else {
-                    console.warn("No token received in signup response");
                 }
-
                 navigate('/home');
             } else {
-                setMessage(data.error || "❌ Something went wrong");
+                setMessage(data.error || "Something went wrong");
+                // Show detailed password errors if present
+                if (data.details && Array.isArray(data.details)) {
+                    setMessage(`Password: ${data.details.join(', ')}`);
+                }
             }
         } catch (err) {
             console.error("Signup error:", err);
-            setMessage("❌ Server error");
+            setMessage("Server error");
         } finally {
             setLoading(false);
         }
-};
+    };
 
     return (
         <Container maxWidth="sm">
-            {/* Header simplifié */}
             <Box sx={{ textAlign: 'center', mb: 4, mt: 8 }}>
                 <Typography variant="h3" component="h1" gutterBottom sx={{ 
                     fontWeight: 'bold', 
@@ -81,7 +102,6 @@ function SignupForm() {
                 </Typography>
             </Box>
 
-            {/* Formulaire */}
             <Paper elevation={3} sx={{ p: 4, mb: 8 }}>
                 <form onSubmit={handleSubmit}>
                     <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
@@ -127,6 +147,8 @@ function SignupForm() {
                         required
                         margin="normal"
                         variant="outlined"
+                        error={!!passwordError}
+                        helperText={passwordError || "At least 12 chars, 1 digit, 1 symbol, 1 upper & 1 lower case"}
                     />
 
                     <Button

@@ -65,7 +65,7 @@ const MyRequests = () => {
             );
         } catch (err) {
             console.error('Status update error:', err);
-            alert('❌ Failed to update status: ' + (err.response?.data?.error || 'Unknown error'));
+            alert('Failed to update status: ' + (err.response?.data?.error || 'Unknown error'));
         }
     };
 
@@ -77,7 +77,7 @@ const MyRequests = () => {
             });
             setOffers(offers.filter(offer => offer.id !== offerId));
         } catch (err) {
-            alert('❌ Error: ' + (err.response?.data?.error || err.message));
+            alert('Error: ' + (err.response?.data?.error || err.message));
         }
     };
 

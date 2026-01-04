@@ -14,6 +14,26 @@ const pool = new Pool({
     port: 5432,  // PostegreSQL default port
 });
 
+// Password validation helper
+function validatePassword(password) {
+    const minLength = 12;
+    const hasMinLength = password.length >= minLength;
+    const hasDigit = /\d/.test(password);
+    const hasLower = /[a-z]/.test(password);
+    const hasUpper = /[A-Z]/.test(password);
+    const hasSymbol = /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(password);
+
+    const valid = hasMinLength && hasDigit && hasLower && hasUpper && hasSymbol;
+    const reasons = [];
+    if (!hasMinLength) reasons.push(`at least ${minLength} characters`);
+    if (!hasDigit) reasons.push('one digit');
+    if (!hasLower) reasons.push('one lowercase letter');
+    if (!hasUpper) reasons.push('one uppercase letter');
+    if (!hasSymbol) reasons.push('one symbol (!@#$%^&*()_+-= etc.)');
+
+    return { valid, reasons };
+}
+
 // POST /signup (inscription)
 // --------------------------
 router.post('/signup', async (req, res) => {
@@ -24,11 +44,20 @@ router.post('/signup', async (req, res) => {
         return res.status(400).json({ error: 'All fields are required' });
     }
 
+    // Validate password format
+    const pwdValidation = validatePassword(password);
+    if (!pwdValidation.valid) {
+        return res.status(400).json({
+            error: 'Invalid password',
+            details: pwdValidation.reasons
+        });
+    }
+
     try {
         // Vérifier qu'aucun utilisateur n'existe déjà avec cet email
         const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
         if (existingUser.rows.length > 0) {
-            return res.status(400).json({ error: '❌ Email already in use' });
+            return res.status(400).json({ error: 'Email already in use' });
         }
 
         // Hasher le mot de passe
@@ -63,7 +92,7 @@ router.post('/signup', async (req, res) => {
 
     } catch (err) {
         console.error('Signup error:', err);
-        res.status(500).json({ error: '❌ Account creation failed' });
+        res.status(500).json({ error: 'Account creation failed' });
     }
 });
 
@@ -145,10 +174,10 @@ router.put('/profile', authenticateToken, async (req, res) => {
                  last_name = COALESCE($2, last_name),
                  email = COALESCE($3, email),
                  phone_number = COALESCE($4, phone_number),
-                 skills_offered = COALESCE($4, skills_offered),
-                 skills_wanted = COALESCE($5, skills_wanted),
-                 notification_preferences = COALESCE($6, notification_preferences)
-             WHERE id = $7
+                 skills_offered = COALESCE($5, skills_offered),
+                 skills_wanted = COALESCE($6, skills_wanted),
+                 notification_preferences = COALESCE($7, notification_preferences)
+             WHERE id = $8
              RETURNING id, first_name, last_name, email, phone_number, skills_offered, skills_wanted, notification_preferences`,
             [first_name, last_name, email, phone_number, skills_offered, skills_wanted, notification_preferences, req.userId]
         );
@@ -181,6 +210,15 @@ router.put('/change-password', authenticateToken, async (req, res) => {
         if (!isValid) {
             return res.status(400).json({ error: 'Current password is incorrect' });
         }
+
+        // Validate new password format
+        const pwdValidation = validatePassword(newPassword);
+            if (!pwdValidation.valid) {
+                return res.status(400).json({
+                    error: 'Invalid new password',
+                    details: pwdValidation.reasons
+                });
+            }
 
         // 3. Hasher le nouveau mot de passe
         const hashedPassword = await bcrypt.hash(newPassword, 10);

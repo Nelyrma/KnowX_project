@@ -119,9 +119,9 @@ const Profile = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setMessage('✅ Profile updated successfully!');
+            setMessage('Profile updated successfully!');
         } catch (err) {
-            setMessage('❌ Error: ' + (err.response?.data?.error || err.message));
+            setMessage('Error: ' + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
         }
@@ -129,7 +129,7 @@ const Profile = () => {
 
     const handleChangePassword = async () => {
         if (passwordData.newPassword !== passwordData.confirmPassword) {
-            setMessage('❌ New passwords do not match');
+            setMessage('New passwords do not match');
             return;
         }
 
@@ -142,11 +142,11 @@ const Profile = () => {
             }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setMessage('✅ Password updated successfully!');
+            setMessage('Password updated successfully!');
             setChangePasswordOpen(false);
             setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
         } catch (err) {
-            setMessage('❌ Error: ' + (err.response?.data?.error || err.message));
+            setMessage('Error: ' + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
         }
@@ -164,7 +164,7 @@ const Profile = () => {
             navigate('/login');
             alert('Account deleted successfully');
         } catch (err) {
-            setMessage('❌ Error: ' + (err.response?.data?.error || err.message));
+            setMessage('Error: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -365,7 +365,7 @@ const Profile = () => {
                                 checked={formData.notification_preferences.sms && !!formData.phone_number}
                                 onChange={(e) => {
                                     if (!formData.phone_number) {
-                                        setMessage('❌ Please add a phone number first');
+                                        setMessage('Please add a phone number first');
                                         return;
                                     }
                                     setFormData({
