@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
+const upload = require('../middleware/upload');
 const { error } = require('console');
 
 router.get('/', async (req, res) => {
@@ -14,22 +15,39 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', authenticateToken, async (req, res) => {
-    const { title, skills_offered, description } = req.body;
-    const userId = req.userId; // retrieved from authentication middleware
+// utilisation .array('images', 5) pour accepter jusqu’à 5 fichiers dans le champ 'images'
+router.post(
+    '/', authenticateToken,
+    upload.array('images', 5),
+    async (req, res) => {
+        const { title, skills_offered, description } = req.body;
+        const userId = req.userId; // retrouvé à partir de authentication middleware
+        const imageFiles = req.files || []; // tableau de fichiers uploadés
 
-    try {
-        const result = await pool.query(
-            `INSERT INTO offers (user_id, title, skills_offered, description)
-            VALUES ($1, $2, $3, $4) RETURNING *`,
-            [userId, title, skills_offered, description]
-        );
-        res.status(201).json(result.rows[0]);
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server Error' })
+        try {
+            // Sauvegarder les chemins des images dans la DB
+            const imagePaths = imageFiles.map(file => `/uploads/${file.filename}`);
+
+            const result = await pool.query(
+                `INSERT INTO offers (user_id, title, skills_offered, description, screenshots)
+                VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+                [userId, title, skills_offered, description, imagePaths]
+            );
+            res.status(201).json(result.rows[0]);
+        } catch (err) {
+            console.error('Error creating offer:', err);
+            
+            // supprimer les images uploadés
+            if (req.files && req.files.length > 0) {
+                const fs = require('fs');
+                req.files.forEach(file => {
+                    fs.unlinkSync(file.path); // supprimer l'image du dossier uploads
+                });
+            }
+            res.status(500).json({ error: 'Server Error' })
+        }
     }
-});
+);
 
 router.delete('/:id', authenticateToken, async (req, res) => {
     const offerId = req.params.id;

@@ -30,6 +30,7 @@ const pool = new Pool({
                 title VARCHAR(255) NOT NULL,
                 skills_offered TEXT[],
                 description TEXT,
+                screenshots TEXT[] DEFAULT '{}',
                 created_at TIMESTAMP DEFAULT NOW()
             );
         `);
@@ -57,11 +58,11 @@ const pool = new Pool({
             CREATE INDEX IF NOT EXISTS idx_messages_offer ON messages(offer_id);
         `);
 
-        console.log('✅ Tables "users", "offers" and "messages" created !');
+        console.log('Tables "users", "offers" and "messages" created !');
     } catch (err) {
-        console.error('❌ Error creating tables:', err);
+        console.error('Error creating tables:', err);
     } finally {
         pool.end();
-        console.log('📶 Database connection closed');
+        console.log('Database connection closed');
     }
 })();
