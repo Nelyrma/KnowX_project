@@ -1,4 +1,6 @@
 const express = require('express');
+const path = require('path');
+const fs = require('fs');
 const router = express.Router();
 const pool = require('../db');
 const authenticateToken = require('../middleware/auth');
@@ -119,39 +121,88 @@ router.get('/:id', async (req, res) => {
 });
 
 // PUT /api/offers/:id - Mettre à jour une offre
-router.put('/:id', authenticateToken, async (req, res) => {
-    const offerId = req.params.id;
-    const userId = req.userId; // ID du user connecté
-    const { title, description, skills_offered } = req.body;
+router.put(
+    '/:id',
+    authenticateToken,
+    upload.array('images', 5),
+    async (req, res) => {
+        const offerId = req.params.id;
+        const userId = req.userId; // ID du user connecté
+        const { title, description, skills_offered } = req.body;
+        const newImages = req.files || [];
+        const deletedScreenshotUrls = req.body.deleted_screenshots || [];
 
-    try {
-        // 1. Vérifier que l'offre appartient à l'utilisateur
-        const offer = await pool.query(
-            `SELECT * FROM offers WHERE id = $1 AND user_id = $2`,
-            [offerId, userId]
-        );
+        let existingScreenshots = [];
 
-        if (offer.rows.length === 0) {
-            return res.status(404).json({ error: 'Offer not found or not authorized' });
+        try {
+            // 1. Vérifier que l'offre appartient à l'utilisateur
+            const offer = await pool.query(
+                `SELECT * FROM offers WHERE id = $1 AND user_id = $2`,
+                [offerId, userId]
+            );
+
+            if (offer.rows.length === 0) {
+                // supprimer les nouvelles images uploadées en cas d'erreur
+                if (newImages.length > 0) {
+                    const fs = require('fs');
+                    newImages.forEach(file => fs.unlinkSync(file.path));
+                }
+                return res.status(404).json({ error: 'Offer not found or not authorized' });
+            }
+
+            existingScreenshots = offer.rows[0].screenshots || [];
+
+            // 2. Supprimer les fichiers physiques marqués pour suppression
+            if (deletedScreenshotUrls.length > 0) {
+                const fs = require('fs');
+                deletedScreenshotUrls.forEach(url => {
+                    const filePath = path.join(__dirname, '..', 'uploads', path.basename(url));
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                });
+            }
+
+            // 3. Générer les chemins des nouvelles images
+            const newImagePaths = newImages.map(file => `/uploads/${file.filename}`);
+
+            // 4. Construire le nouveau tableau de screenshots
+            const keptScreenshots = existingScreenshots.filter(
+                url => !deletedScreenshotUrls.includes(url)
+            );
+            const updatedScreenshots = [...keptScreenshots, ...newImagePaths];
+
+            // 5. Mettre à jour l'offre
+            const result = await pool.query(
+                `UPDATE offers 
+                 SET title = $1, skills_offered = $2, description = $3, screenshots = $4
+                 WHERE id = $5
+                 RETURNING *`,
+                [title, skills_offered, description, updatedScreenshots, offerId]
+            );
+
+            res.json({
+                message: 'Offer successfully updated!',
+                offer: result.rows[0]
+            });
+
+        } catch (err) {
+            console.error('Error updating offer:', err);
+
+            // NETTOYAGE EN CAS D'ERREUR : supprimer les nouvelles images uploadées
+            if (newImages.length > 0) {
+                const fs = require('fs');
+                newImages.forEach(file => {
+                    const filePath = file.path;
+                    if (fs.existsSync(filePath)) {
+                        fs.unlinkSync(filePath);
+                    }
+                });
+            }
+            res.status(500).json({ error: 'Server Error' });
         }
-
-        // 2. Mettre à jour l'offre
-        const result = await pool.query(
-            `UPDATE offers 
-             SET title = $1, skills_offered = $2, description = $3
-             WHERE id = $4
-             RETURNING *`,
-            [title, skills_offered, description, offerId]
-        );
-
-        // 3. Renvoyer l'offre mise à jour
-        res.json({ message: 'Offer successfully updated!', offer: result.rows[0] });
-
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Server Error' });
     }
-});
+);
 
 // PATCH /api/offers/:id/status - Mettre à jour le statut d'une offre
 router.patch('/:id/status', authenticateToken, async (req, res) => {
