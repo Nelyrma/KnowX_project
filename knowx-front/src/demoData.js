@@ -15,8 +15,8 @@ export const DEMO_CREDENTIALS = {
     
     // Données pour créer une demande
     request: {
-        title: "Need help with React Native",
-        skills_offered: ["React Native", "JavaScript", "Mobile Development"],
-        description: "I'm building a mobile app with React Native and need help with navigation and state management. Looking for someone experienced with React Navigation and Context API."
+        title: "Help needed with Python data analysis",
+        skills_offered: ["Python", "Pandas", "Data Visualization"],
+        description: "I'm working on a data analysis project using Python and need assistance cleaning and visualizing a large dataset. Familiarity with pandas, matplotlib, and handling CSV/JSON data is a plus."
     }
 };

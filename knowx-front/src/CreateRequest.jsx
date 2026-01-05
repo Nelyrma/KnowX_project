@@ -19,6 +19,7 @@ const CreateRequest = () => {
     const [currentSkill, setCurrentSkill] = useState('');
     const [skills, setSkills] = useState([]);
     const [description, setDescription] = useState('');
+    const [images, setImages] = useState([]);
     const navigate = useNavigate();
 
     const handleAddSkill = () => {
@@ -32,21 +33,45 @@ const CreateRequest = () => {
         setSkills(skills.filter(skill => skill !== skillToRemove));
     };
 
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files);
+        const validFiles = files.filter(file => {
+            if (!file.type.startsWith('image/')) {
+                alert(`"${file.name}" is not an image.`);
+                return false;
+            }
+            if (file.size > 5 * 1024 * 1024) {
+                alert(`"${file.name}" is too large (max 5 MB).`);
+                return false;
+            }
+            return true;
+        });
+        const newImages = [...images, ...validFiles].slice(0, 5);
+        setImages(newImages);
+    };
+
+    const removeImage = (indexToRemove) => {
+        setImages(images.filter((_, index) => index !== indexToRemove));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         const token = localStorage.getItem('token');
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('description', description);
+        skills.forEach(skill => formData.append('skills_offered[]', skill));
+        images.forEach(file => formData.append('images', file));
+
         try {
-            await axios.post('http://localhost:3001/api/offers', {
-                title,
-                skills_offered: skills,
-                description
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
+            await axios.post('http://localhost:3001/api/offers', formData, {
+                headers: { Authorization: `Bearer ${token}` },
             });
-            alert('✅ Request created successfully!');
+            alert('Request created successfully!');
             navigate('/home');
         } catch (err) {
-            alert('❌ Error: ' + (err.response?.data?.error || err.message));
+            alert('Error: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -163,6 +188,63 @@ const CreateRequest = () => {
                         required
                         placeholder="Describe what kind of help you need..."
                     />
+
+                    {/* Section Upload d'images */}
+                    <Box sx={{ mt: 3 }}>
+                        <Typography variant="subtitle1" sx={{ mb: 1 }}>
+                            Add Screenshots (Optional)
+                        </Typography>
+                        <Button
+                            component="label"
+                            variant="outlined"
+                            startIcon={<Add />}
+                            sx={{ mb: 2 }}
+                        >
+                            Add Images
+                            <input
+                                type="file"
+                                hidden
+                                multiple
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+                        </Button>
+
+                        {/* Prévisualisation des images */}
+                        {images.length > 0 && (
+                            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 2 }}>
+                                {images.map((file, index) => (
+                                    <Box key={index} sx={{ position: 'relative' }}>
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt={`preview ${index}`}
+                                            style={{
+                                                width: 80,
+                                                height: 80,
+                                                objectFit: 'cover',
+                                                borderRadius: 4,
+                                                border: '1px solid #eee'
+                                            }}
+                                        />
+                                        <Button
+                                            size="small"
+                                            color="error"
+                                            sx={{
+                                                position: 'absolute',
+                                                top: -8,
+                                                right: -8,
+                                                minWidth: 0,
+                                                p: 0.3
+                                            }}
+                                            onClick={() => removeImage(index)}
+                                        >
+                                            ✕
+                                        </Button>
+                                    </Box>
+                                ))}
+                            </Box>
+                        )}
+                    </Box>
 
                     {/* Bouton de soumission */}
                     <Button
