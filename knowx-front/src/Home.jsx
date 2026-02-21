@@ -137,102 +137,113 @@ const Home = () => {
             {/* Header */}
             <AppBar position="static">
                 <Toolbar>
-                    {/* Logo/Titre à gauche */}
+                {/* Logo/Titre - visible sur tous les écrans */}
                     <Typography variant="h6" sx={{ 
                         flexGrow: 1, 
                         fontWeight: 'bold',
-                        cursor: 'pointer'
+                        cursor: 'pointer',
+                        fontSize: { xs: '1rem', sm: '1.25rem' }
                     }} onClick={() => navigate('/home')}>
                         KnowX
                     </Typography>
 
-                    {/* Actions principales à droite */}
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        {/* Bouton Create Request */}
+                {/* Actions principales */}
+                    <Box sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        gap: { xs: 0.5, sm: 1 } 
+                    }}>
+                        {/* Bouton Create Request - icône seule sur mobile */}
                         <Button 
-                            color="inherit" 
-                            startIcon={<Add />} 
+                            color="inherit"
                             onClick={() => navigate('/create-request')}
                             sx={{ 
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }
+                            minWidth: 'auto',
+                            px: { xs: 1, sm: 2 },
+                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                            '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.2)' }
                             }}
                         >
-                            Create Request
+                            <Add sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                                Create
+                            </Typography>
                         </Button>
 
-                        {/* Séparateur visuel */}
-                        <Box sx={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.3)', mx: 1 }} />
-
-                        {/* Messages */}
+                        {/* Messages - icône seule sur mobile */}
                         <Button 
                             color="inherit"
                             onClick={() => navigate('/messages')}
                             sx={{
                                 minWidth: 'auto',
-                                px: 1.5,
-                                display: 'flex',
-                                alignItems: 'center'
+                                px: { xs: 1, sm: 1.5 },
+                                position: 'relative'
                             }}
                         >
-                            <Email sx={{ fontSize: 24 }} />
-                            <Typography sx={{
-                                ml: 1, display: { xs: 'none', sm: 'inline' }
-                            }}>
+                            <Badge
+                                badgeContent={unreadCount}
+                                color="error"
+                                max={99}
+                                sx={{
+                                    '& .MuiBadge-badge': {
+                                    fontSize: '0.65rem',
+                                    height: 18,
+                                    minWidth: 18,
+                                    top: -5,
+                                    right: -5,
+                                    }
+                                }}
+                            >
+                                <Email sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                            </Badge>
+                            <Typography sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
                                 Messages
                             </Typography>
-                            {unreadCount > 0 && (
-                                <Badge
-                                    badgeContent={unreadCount}
-                                    color="error"
-                                    max={99}
-                                    sx={{
-                                        '& .MuiBadge-badge': {
-                                            fontSize: '0.65rem',
-                                            height: 18,
-                                            minWidth: 18,
-                                            right: 0,
-                                            top: -10,
-                                            transform: 'translateX(0)',
-                                            position: 'relative',
-                                            marginLeft: '4px'
-                                        },
-                                        display: 'inline-flex'
-                                    }}
-                                >
-                                    <Box sx={{ width: 0, height: 0 }} /> {/* élément vide pour le Badge */}
-                                </Badge>
-                            )}
                         </Button>
 
-                        {/* My requests */}
+                        {/* My requests - icône seule sur mobile */}
                         <Button
                             color="inherit"
-                            startIcon={<List />}
                             onClick={() => navigate('/my-requests')}
+                            sx={{ 
+                                minWidth: 'auto',
+                                px: { xs: 1, sm: 1.5 }
+                            }}
                         >
-                            My requests
+                            <List sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                                My requests
+                            </Typography>
                         </Button>
 
-                        {/* Profile */}
+                        {/* Profile - icône seule sur mobile */}
                         <Button 
-                            color="inherit" 
-                            startIcon={<Person />} 
+                            color="inherit"
                             onClick={() => navigate('/profile')}
+                                sx={{ 
+                                minWidth: 'auto',
+                                px: { xs: 1, sm: 1.5 }
+                            }}
                         >
-                            Profile
+                            <Person sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                                Profile
+                            </Typography>
                         </Button>
 
-                        {/* Séparateur visuel */}
-                        <Box sx={{ width: '1px', height: '24px', backgroundColor: 'rgba(255, 255, 255, 0.3)', mx: 1 }} />
-
-                        {/* Logout */}
+                        {/* Logout - icône seule sur mobile */}
                         <Button 
-                            color="inherit" 
-                            startIcon={<Logout />} 
+                            color="inherit"
                             onClick={handleLogout}
+                            sx={{ 
+                                minWidth: 'auto',
+                                px: { xs: 1, sm: 1.5 }
+                            }}
                         >
-                            Logout
+                            <Logout sx={{ fontSize: { xs: 20, sm: 24 } }} />
+                            <Typography sx={{ ml: 0.5, display: { xs: 'none', sm: 'inline' } }}>
+                                Logout
+                            </Typography>
                         </Button>
                     </Box>
                 </Toolbar>
@@ -240,53 +251,87 @@ const Home = () => {
 
             {/* HERO & SEARCH + FILTERS */}
             <Box sx={{
-                py: 6,
+                py: { xs: 4, sm: 6 },
                 background: `linear-gradient(to bottom, ${theme.palette.primary.light}, ${theme.palette.background.default})`,
                 width: '100%',
                 display: 'flex',
                 justifyContent: 'center',
-                alignItems: 'center'
+                alignItems: 'center',
+                px: { xs: 2, sm: 0 }
             }}>
                 <Container maxWidth="md">
-                    <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold', color: 'text.primary', mb: 2 }}>
+                    {/* Titres adaptatifs */}
+                    <Typography 
+                        variant="h2" 
+                        component="h1" 
+                        gutterBottom 
+                        sx={{ 
+                            fontWeight: 'bold', 
+                            color: 'text.primary', 
+                            mb: 2,
+                            fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' },
+                            textAlign: { xs: 'center', sm: 'left' }
+                        }}
+                    >
                         Share Your Skills
                     </Typography>
-                    <Typography variant="h5" component="h2" gutterBottom sx={{ color: 'text.secondary', mb: 4 }}>
+                    <Typography 
+                    variant="h5" 
+                    component="h2" 
+                    gutterBottom 
+                    sx={{ 
+                        color: 'text.secondary', 
+                        mb: 4,
+                        fontSize: { xs: '1.125rem', sm: '1.5rem' },
+                        textAlign: { xs: 'center', sm: 'left' }
+                    }}
+                    >
                         Find help or offer your expertise
                     </Typography>
 
-                    {/* Search bar */}
-                    <TextField
-                        fullWidth
-                        placeholder="Search for Python, React, Design..."
-                        variant="outlined"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        sx={{ 
-                            maxWidth: 600, 
-                            mx: 'auto',
-                            mb: 3,
-                            width: '100%'
-                        }}
-                        InputProps={{
+                    {/* Search bar pleine largeur sur mobile */}
+                    <Box sx={{ width: '100%', mb: 3 }}>
+                        <TextField
+                            fullWidth
+                            placeholder="Search for Python, React, Design..."
+                            variant="outlined"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            sx={{ 
+                                maxWidth: 600,
+                                mx: 'auto',
+                                width: '100%',
+                                '& .MuiOutlinedInput-root': {
+                                    height: { xs: 48, sm: 56 }
+                                }
+                            }}
+                            InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <Search />
+                                <Search />
                                 </InputAdornment>
                             ),
-                        }}
-                    />
+                            }}
+                        />
+                    </Box>
 
-                    {/* Filtres */}
+                    {/* Filtres en colonne sur mobile */}
                     <Box sx={{ 
                         display: 'flex', 
-                        flexWrap: 'wrap', 
+                        flexDirection: { xs: 'column', sm: 'row' },
                         gap: 2, 
                         justifyContent: 'center',
                         maxWidth: 600,
-                        mx: 'auto'
+                        mx: 'auto',
+                        width: '100%'
                     }}>
-                        <FormControl size="small" sx={{ minWidth: 140 }}>
+                        <FormControl 
+                            size="small" 
+                            sx={{ 
+                            minWidth: { xs: '100%', sm: 140 },
+                            width: { xs: '100%', sm: 'auto' }
+                            }}
+                        >
                             <InputLabel sx={{ fontSize: '0.875rem' }}>Status</InputLabel>
                             <Select
                                 value={statusFilter}
@@ -301,7 +346,13 @@ const Home = () => {
                             </Select>
                         </FormControl>
 
-                        <FormControl size="small" sx={{ minWidth: 160 }}>
+                        <FormControl 
+                            size="small" 
+                            sx={{ 
+                                minWidth: { xs: '100%', sm: 160 },
+                                width: { xs: '100%', sm: 'auto' }
+                            }}
+                        >
                             <InputLabel sx={{ fontSize: '0.875rem' }}>Sort by</InputLabel>
                             <Select
                                 value={sortBy}
@@ -316,95 +367,107 @@ const Home = () => {
                     </Box>
                 </Container>
             </Box>
+
             {/* Requests grid - pleine largeur */}
             <Box sx={{ 
                 width: '100%',
-                py: 6,
+                py: { xs: 4, sm: 6 },
                 px: { xs: 2, sm: 3, md: 4 }
             }}>
                 <Grid 
                     container 
-                    spacing={3} 
+                    spacing={{ xs: 2, sm: 3 }}
                     justifyContent="center"
                     sx={{ maxWidth: '1200px', mx: 'auto' }}
                 >
                     {filteredOffers.length === 0 ? (
-                        <Grid item xs={12}>
-                            <Typography variant="h6" textAlign="center" color="textSecondary">
-                                {searchTerm ? 'No matching requests found.' : 'No requests available yet.'}
-                            </Typography>
-                        </Grid>
-                    ) : (
-                        filteredOffers.map((offer) => (
-                            <Grid 
-                                item 
-                                xs={12} sm={6} md={4} lg={3}
-                                key={offer.id}
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'center'
+                    <Grid item xs={12}>
+                        <Typography 
+                            variant="h6" 
+                            textAlign="center" 
+                            color="textSecondary"
+                            sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}
+                        >
+                            {searchTerm ? 'No matching requests found.' : 'No requests available yet.'}
+                        </Typography>
+                    </Grid>
+                ) : (
+                    filteredOffers.map((offer) => (
+                        <Grid 
+                            item 
+                            xs={12} 
+                            sm={6} 
+                            md={4} 
+                            lg={3}
+                            key={offer.id}
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center'
+                            }}
+                        >
+                            <Card 
+                                sx={{ 
+                                height: '100%', 
+                                display: 'flex', 
+                                flexDirection: 'column',
+                                transition: '0.2s',
+                                '&:hover': { 
+                                    transform: { xs: 'none', sm: 'translateY(-4px)' }, 
+                                    boxShadow: { xs: 2, sm: 6 },
+                                    borderColor: 'primary.main'
+                                },
+                                width: '100%',
+                                maxWidth: { xs: '100%', sm: 340 },
+                                border: '1px solid',
+                                borderColor: 
+                                    offer.status === 'pending' ? 'grey.300' :
+                                    offer.status === 'in progress' ? 'warning.main' :
+                                    'success.main'
                                 }}
                             >
-                                <Card 
-                                    sx={{ 
-                                        height: '100%', 
+                                <CardContent sx={{ 
+                                    flexGrow: 1, 
+                                    pb: 0,
+                                    '&:last-child': { pb: 0 },
+                                    p: { xs: 2, sm: 3 }
+                                }}>
+                                    {/* Badges alignés */}
+                                    <Box sx={{ 
                                         display: 'flex', 
-                                        flexDirection: 'column',
-                                        transition: '0.2s',
-                                        '&:hover': { 
-                                            transform: 'translateY(-4px)', 
-                                            boxShadow: 6,
-                                            borderColor: 'primary.main'
-                                        },
-                                        width: '100%',
-                                        maxWidth: 340,
-                                        border: '1px solid',
-                                        borderColor: 
-                                            offer.status === 'pending' ? 'grey.300' :
-                                            offer.status === 'in progress' ? 'warning.main' :
-                                            'success.main'
-                                    }}
-                                >
-                                    <CardContent sx={{ 
-                                        flexGrow: 1, 
-                                        pb: 0,
-                                        '&:last-child': { pb: 0 }
+                                        gap: 1, 
+                                        mb: 1.5, 
+                                        flexWrap: 'wrap'
                                     }}>
-                                        {/* Badges alignés */}
-                                        <Box sx={{ 
-                                            display: 'flex', 
-                                            gap: 1, 
-                                            mb: 1.5, 
-                                            flexWrap: 'wrap'
-                                        }}>
-                                            <Chip
-                                                label={offer.skills_offered?.[0] || 'Skill?'}
-                                                size="small"
-                                                sx={{ 
-                                                    fontWeight: 600,
-                                                    bgcolor: 'primary.main',
-                                                    color: 'white',
-                                                    height: 24
-                                                }}
-                                            />
-                                            <Chip
-                                                label={
-                                                    offer.status === 'pending' ? 'Pending' :
-                                                    offer.status === 'in progress' ? 'In progress' :
-                                                    'Resolved'
-                                                }
-                                                size="small"
-                                                color={
-                                                    offer.status === 'pending' ? 'default' :
-                                                    offer.status === 'in progress' ? 'warning' :
-                                                    'success'
-                                                }
-                                                sx={{ 
-                                                    fontWeight: 600,
-                                                    height: 24
-                                                }}
-                                            />
-                                        </Box>
+                                        <Chip
+                                        label={offer.skills_offered?.[0] || 'Skill?'}
+                                        size="small"
+                                        sx={{ 
+                                            fontWeight: 600,
+                                            bgcolor: 'primary.main',
+                                            color: 'white',
+                                            height: 24,
+                                            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                                        }}
+                                        />
+                                        <Chip
+                                            label={
+                                                offer.status === 'pending' ? 'Pending' :
+                                                offer.status === 'in progress' ? 'In progress' :
+                                                'Resolved'
+                                            }
+                                            size="small"
+                                            color={
+                                                offer.status === 'pending' ? 'default' :
+                                                offer.status === 'in progress' ? 'warning' :
+                                                'success'
+                                            }
+                                            sx={{ 
+                                                fontWeight: 600,
+                                                height: 24,
+                                                fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                                            }}
+                                        />
+                                    </Box>
 
                                         {/* Titre principal */}
                                         <Typography 
@@ -412,12 +475,13 @@ const Home = () => {
                                             gutterBottom 
                                             sx={{ 
                                                 fontWeight: 'bold',
-                                                minHeight: '56px',
+                                                minHeight: { xs: '48px', sm: '56px' },
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 2,
                                                 WebkitBoxOrient: 'vertical',
                                                 overflow: 'hidden',
-                                                mb: 1.5
+                                                mb: 1.5,
+                                                fontSize: { xs: '1rem', sm: '1.125rem' }
                                             }}
                                         >
                                             {offer.title}
@@ -428,48 +492,50 @@ const Home = () => {
                                             variant="body2" 
                                             color="text.secondary"
                                             sx={{ 
-                                                minHeight: '60px',
+                                                minHeight: { xs: '72px', sm: '60px' },
                                                 display: '-webkit-box',
                                                 WebkitLineClamp: 3,
                                                 WebkitBoxOrient: 'vertical',
                                                 overflow: 'hidden',
                                                 mb: 2,
-                                                fontSize: '0.9rem'
+                                                fontSize: { xs: '0.875rem', sm: '0.9rem' }
                                             }}
                                         >
                                             {offer.description || 'No description provided.'}
                                         </Typography>
+                                </CardContent>
 
-                                        {/* Boutons : uniquement pour le propriétaire */}
-
-                                    </CardContent>
-
-                                    <CardActions sx={{ justifyContent: 'center', p: 2, pt: 0 }}>
-                                        <Button
-                                            size="small"
-                                            variant="contained"
-                                            color={
-                                                offer.status === 'pending' ? 'primary' :
-                                                offer.status === 'in progress' ? 'warning' :
-                                                'success'
-                                            }
-                                            onClick={() => navigate(`/offer/${offer.id}`)}
-                                            sx={{ 
-                                                fontWeight: 'bold',
-                                                textTransform: 'none',
-                                                px: 3,
-                                                width: '100%',
-                                                boxShadow: 'none'
-                                            }}
-                                        >
-                                            {offer.status === 'pending' ? 'View request' :
-                                            offer.status === 'in progress' ? 'Continue' :
-                                            'Details'}
-                                        </Button>
-                                    </CardActions>
-                                </Card>
-                            </Grid>
-                        ))
+                                <CardActions sx={{ 
+                                    justifyContent: 'center', 
+                                    p: { xs: 2, sm: 3 }, 
+                                    pt: 0 
+                                }}>
+                                    <Button
+                                        size="small"
+                                        variant="contained"
+                                        color={
+                                            offer.status === 'pending' ? 'primary' :
+                                            offer.status === 'in progress' ? 'warning' :
+                                            'success'
+                                        }
+                                        onClick={() => navigate(`/offer/${offer.id}`)}
+                                        sx={{ 
+                                            fontWeight: 'bold',
+                                            textTransform: 'none',
+                                            px: 3,
+                                            width: '100%',
+                                            boxShadow: 'none',
+                                            fontSize: { xs: '0.875rem', sm: '0.9rem' }
+                                        }}
+                                    >
+                                        {offer.status === 'pending' ? 'View request' :
+                                        offer.status === 'in progress' ? 'Continue' :
+                                        'Details'}
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))
                     )}
                 </Grid>
             </Box>
